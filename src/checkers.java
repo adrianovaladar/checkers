@@ -8,28 +8,31 @@ import javax.swing.JButton;
 public class checkers extends JButton {
 
     int i, j;
-    public void king_red(){
-            this.setActionCommand("king_red");
 
-            try {
-                Image img1 = ImageIO.read(getClass().getResource("resources/red_king.png"));
-                this.setIcon(new ImageIcon(img1));
+    public void king_red() {
+        this.setActionCommand("king_red");
 
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }        
+        try {
+            Image img1 = ImageIO.read(getClass().getResource("resources/red_king.png"));
+            this.setIcon(new ImageIcon(img1));
+
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
     }
-        public void king_black(){
-            this.setActionCommand("king_black");
 
-            try {
-                Image img1 = ImageIO.read(getClass().getResource("resources/black_king.png"));
-                this.setIcon(new ImageIcon(img1));
+    public void king_black() {
+        this.setActionCommand("king_black");
 
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }        
+        try {
+            Image img1 = ImageIO.read(getClass().getResource("resources/black_king.png"));
+            this.setIcon(new ImageIcon(img1));
+
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
     }
+
     public checkers(int i, int j) {
         this.i = i;
         this.j = j;

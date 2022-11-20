@@ -175,7 +175,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
             black_checkers--;
             try {
 
-                    Image img2 = ImageIO.read(getClass().getResource("resources/red_king.png"));
+                Image img2 = ImageIO.read(getClass().getResource("resources/red_king.png"));
                 BoardSquares[c.i][c.j].setIcon(new ImageIcon(img2));
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -868,6 +868,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
         }
 
     }
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             board content;
