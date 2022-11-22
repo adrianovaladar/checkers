@@ -2,20 +2,21 @@
 import java.awt.Color;
 import java.awt.Image;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import javax.swing.*;
 
 public class checkers extends JButton {
 
     int i, j;
+    Icon icon;
 
     public void king_red() {
         this.setActionCommand("king_red");
+        Image img;
 
         try {
-            Image img1 = ImageIO.read(getClass().getResource("resources/red_king.png"));
-            this.setIcon(new ImageIcon(img1));
-
+            img = ImageIO.read(getClass().getResource("resources/red_king.png"));
+            icon = new ImageIcon(img);
+            this.setIcon(icon);
         } catch (Exception ex) {
             System.out.println(ex);
         }
@@ -23,11 +24,34 @@ public class checkers extends JButton {
 
     public void king_black() {
         this.setActionCommand("king_black");
+        Image img;
 
         try {
-            Image img1 = ImageIO.read(getClass().getResource("resources/black_king.png"));
-            this.setIcon(new ImageIcon(img1));
+            img = ImageIO.read(getClass().getResource("resources/black_king.png"));
+            icon = new ImageIcon(img);
+            this.setIcon(icon);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
 
+    public void redMan() {
+        Image img;
+        try {
+            img = ImageIO.read(getClass().getResource("resources/red_man.png"));
+            icon = new ImageIcon(img);
+            this.setIcon(icon);
+        } catch (Exception ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public void blackMan() {
+        Image img;
+        try {
+            img = ImageIO.read(getClass().getResource("resources/black_man.png"));
+            icon = new ImageIcon(img);
+            this.setIcon(icon);
         } catch (Exception ex) {
             System.out.println(ex);
         }
@@ -42,7 +66,7 @@ public class checkers extends JButton {
             this.setActionCommand("black");
 
             try {
-                Image img1 = ImageIO.read(getClass().getResource("resources/black_men.png"));
+                Image img1 = ImageIO.read(getClass().getResource("resources/black_man.png"));
                 this.setIcon(new ImageIcon(img1));
 
             } catch (Exception ex) {
@@ -53,7 +77,7 @@ public class checkers extends JButton {
 
             try {
 
-                Image img2 = ImageIO.read(getClass().getResource("resources/red_men.png"));
+                Image img2 = ImageIO.read(getClass().getResource("resources/red_man.png"));
                 this.setIcon(new ImageIcon(img2));
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -62,5 +86,9 @@ public class checkers extends JButton {
             this.setActionCommand("");
             this.setIcon(null);
         }
+    }
+
+    public checkers() {
+
     }
 }

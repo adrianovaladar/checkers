@@ -3,19 +3,11 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JFrame;
-import javax.swing.SwingConstants;
-import javax.swing.JPanel;
+import javax.swing.*;
 import java.awt.Image;
 import java.awt.Toolkit;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 import java.awt.event.*;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.SwingUtilities;
 
 public class board extends JFrame implements MouseListener, ActionListener {
 
@@ -30,7 +22,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
     JLabel[] characters = new JLabel[8];
     Image img;
     String player;
-    int i, j, r, c, redCheckers, blackCheckers, redWins, blackWins;
+    int i, j, redCheckers, blackCheckers, redWins, blackWins;
     boolean canJump, canMove, gameOver;
     int pos1i2, pos1j2, pos2i2, pos2j2, pos3i2, pos3j2, pos4i2, pos4j2, pos1i3, pos1j3, pos2i3, pos2j3, pos3i3, pos3j3, pos4i3, pos4j3;
     PlayerTurn playerturn = new PlayerTurn();
@@ -103,7 +95,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
             JLabel j1 = new JLabel(8 - i + "", SwingConstants.CENTER);
             centerPanel.add(j1);
             for (int j = 0; j < BoardSquares.length; j++) {
-                JButton b = new JButton();
+                checkers b = new checkers();
                 b.setBorder(null);
                 if (i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1) {
                     b.setBackground(new Color(249, 192, 102));
@@ -144,65 +136,23 @@ public class board extends JFrame implements MouseListener, ActionListener {
         return !c.getActionCommand().equals("");
     }
 
-    public void jumpChecker(checkers c, int row, int col) {
+    public void jumpChecker(checkers c) {
+        int jumpedCheckerRow;
+        int jumpedCheckerColumn;
+        jumpedCheckerRow = (this.i + c.i) / 2;
+        jumpedCheckerColumn = (this.j + c.j) / 2;
+        BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setActionCommand("");
+        BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setIcon(null);
 
-        this.r = (this.i + row) / 2;
-        this.c = (this.j + col) / 2;
-        BoardSquares[this.r][this.c].setActionCommand("");
-        BoardSquares[this.r][this.c].setIcon(null);
-        if (this.player.equals("red") && BoardSquares[this.i][this.j].getActionCommand().equals("red")) {
-            BoardSquares[this.i][this.j].setActionCommand("");
-            BoardSquares[this.i][this.j].setIcon(null);
-            BoardSquares[c.i][c.j].setActionCommand("red");
-            messages.append("Red piece on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(this.r, this.c) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
-            blackCheckers--;
-            try {
-
-                Image img2 = ImageIO.read(getClass().getResource("resources/red_men.png"));
-                BoardSquares[c.i][c.j].setIcon(new ImageIcon(img2));
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        } else if (this.player.equals("red") && BoardSquares[this.i][this.j].getActionCommand().equals("king_red")) {
-            BoardSquares[this.i][this.j].setActionCommand("");
-            BoardSquares[this.i][this.j].setIcon(null);
-            BoardSquares[c.i][c.j].setActionCommand("king_red");
-            messages.append("Red king on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(this.r, this.c) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
-            blackCheckers--;
-            try {
-
-                Image img2 = ImageIO.read(getClass().getResource("resources/red_king.png"));
-                BoardSquares[c.i][c.j].setIcon(new ImageIcon(img2));
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        } else if (this.player.equals("black") && BoardSquares[this.i][this.j].getActionCommand().equals("black")) {
-            BoardSquares[this.i][this.j].setActionCommand("");
-            BoardSquares[this.i][this.j].setIcon(null);
-            BoardSquares[c.i][c.j].setActionCommand("black");
-            messages.append("Black piece on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(this.r, this.c) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
-            redCheckers--;
-            try {
-
-                Image img2 = ImageIO.read(getClass().getResource("resources/black_men.png"));
-                BoardSquares[c.i][c.j].setIcon(new ImageIcon(img2));
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        } else if (this.player.equals("black") && BoardSquares[this.i][this.j].getActionCommand().equals("king_black")) {
-            BoardSquares[this.i][this.j].setActionCommand("");
-            BoardSquares[this.i][this.j].setIcon(null);
-            BoardSquares[c.i][c.j].setActionCommand("king_black");
-            messages.append("Black king on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(this.r, this.c) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
-            redCheckers--;
-            try {
-
-                Image img2 = ImageIO.read(getClass().getResource("resources/black_king.png"));
-                BoardSquares[c.i][c.j].setIcon(new ImageIcon(img2));
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
-        }
+        String action = BoardSquares[this.i][this.j].getActionCommand();
+        Icon icon = BoardSquares[this.i][this.j].getIcon();
+        BoardSquares[this.i][this.j].setActionCommand("");
+        BoardSquares[this.i][this.j].setIcon(null);
+        BoardSquares[c.i][c.j].setActionCommand(action);
+        BoardSquares[c.i][c.j].setIcon(icon);
+        messages.append(player + " piece on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
+        if (player == "red") blackCheckers--;
+        else redCheckers--;
         if (redCheckers == 0) {
             messages.append("Game over\n");
             messages.append("Black won\n");
@@ -244,7 +194,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
 
             try {
 
-                Image img2 = ImageIO.read(getClass().getResource("resources/red_men.png"));
+                Image img2 = ImageIO.read(getClass().getResource("resources/red_man.png"));
                 BoardSquares[c.i][c.j].setIcon(new ImageIcon(img2));
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -254,7 +204,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
 
             try {
 
-                Image img2 = ImageIO.read(getClass().getResource("resources/black_men.png"));
+                Image img2 = ImageIO.read(getClass().getResource("resources/black_man.png"));
                 BoardSquares[c.i][c.j].setIcon(new ImageIcon(img2));
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -270,7 +220,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
             messages.append("Red moved piece from " + this.BoardPosition(this.i, this.j) + " to " + this.BoardPosition(c.i, c.j) + "\n");
             try {
 
-                Image img2 = ImageIO.read(getClass().getResource("resources/red_men.png"));
+                Image img2 = ImageIO.read(getClass().getResource("resources/red_man.png"));
                 BoardSquares[c.i][c.j].setIcon(new ImageIcon(img2));
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -297,7 +247,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
 
             try {
 
-                Image img2 = ImageIO.read(getClass().getResource("resources/black_men.png"));
+                Image img2 = ImageIO.read(getClass().getResource("resources/black_man.png"));
                 BoardSquares[c.i][c.j].setIcon(new ImageIcon(img2));
             } catch (Exception ex) {
                 System.out.println(ex);
@@ -323,7 +273,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
         checkers c = (checkers) m.getSource();
         this.canMove = false;
         if (c.getBackground().equals(new Color(255, 0, 0))) {
-            jumpChecker(c, c.i, c.j);
+            jumpChecker(c);
             for (int i = 0; i < BoardSquares.length; i++) {
                 for (int j = 0; j < BoardSquares.length; j++) {
 
