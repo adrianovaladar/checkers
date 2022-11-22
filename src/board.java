@@ -30,19 +30,19 @@ public class board extends JFrame implements MouseListener, ActionListener {
     JLabel[] characters = new JLabel[8];
     Image img;
     String player;
-    int i, j, r, c, red_checkers, black_checkers, wins_red, wins_black;
+    int i, j, r, c, redCheckers, blackCheckers, redWins, blackWins;
     boolean canJump, canMove, gameOver;
     int pos1i2, pos1j2, pos2i2, pos2j2, pos3i2, pos3j2, pos4i2, pos4j2, pos1i3, pos1j3, pos2i3, pos2j3, pos3i3, pos3j3, pos4i3, pos4j3;
     PlayerTurn playerturn = new PlayerTurn();
     Messages messages = new Messages();
     JButton startGame = new JButton();
     JButton giveUp = new JButton();
-    wins score = new wins();
+    wins score = new wins(redWins, blackWins);
 
     public void startGUI() {
 
-        red_checkers = 12;
-        black_checkers = 12;
+        redCheckers = 12;
+        blackCheckers = 12;
         this.setTitle("Checkers Game - Adriano Valadar");
         this.player = "red";
         centerPanel.setLayout(new GridLayout(9, 9));
@@ -85,7 +85,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
         this.setPreferredSize(new Dimension(960, 700));
-        this.setResizable(false);
+        this.setResizable(true);
         this.pack();
         this.setVisible(true);
 
@@ -94,14 +94,10 @@ public class board extends JFrame implements MouseListener, ActionListener {
     public void addBoard() {
         this.gameOver = false;
         numbers[0] = new JLabel("");
-        characters[0] = new JLabel("A", SwingConstants.CENTER);
-        characters[1] = new JLabel("B", SwingConstants.CENTER);
-        characters[2] = new JLabel("C", SwingConstants.CENTER);
-        characters[3] = new JLabel("D", SwingConstants.CENTER);
-        characters[4] = new JLabel("E", SwingConstants.CENTER);
-        characters[5] = new JLabel("F", SwingConstants.CENTER);
-        characters[6] = new JLabel("G", SwingConstants.CENTER);
-        characters[7] = new JLabel("H", SwingConstants.CENTER);
+        for (int i = 0; i < characters.length; i++) {
+            char character = (char) ('A' + i);
+            characters[i] = new JLabel(String.valueOf(character), SwingConstants.CENTER);
+        }
 
         for (int i = 0; i < BoardSquares.length; i++) {
             JLabel j1 = new JLabel(8 - i + "", SwingConstants.CENTER);
@@ -159,7 +155,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
             BoardSquares[this.i][this.j].setIcon(null);
             BoardSquares[c.i][c.j].setActionCommand("red");
             messages.append("Red piece on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(this.r, this.c) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
-            black_checkers--;
+            blackCheckers--;
             try {
 
                 Image img2 = ImageIO.read(getClass().getResource("resources/red_men.png"));
@@ -172,7 +168,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
             BoardSquares[this.i][this.j].setIcon(null);
             BoardSquares[c.i][c.j].setActionCommand("king_red");
             messages.append("Red king on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(this.r, this.c) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
-            black_checkers--;
+            blackCheckers--;
             try {
 
                 Image img2 = ImageIO.read(getClass().getResource("resources/red_king.png"));
@@ -185,7 +181,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
             BoardSquares[this.i][this.j].setIcon(null);
             BoardSquares[c.i][c.j].setActionCommand("black");
             messages.append("Black piece on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(this.r, this.c) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
-            red_checkers--;
+            redCheckers--;
             try {
 
                 Image img2 = ImageIO.read(getClass().getResource("resources/black_men.png"));
@@ -198,7 +194,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
             BoardSquares[this.i][this.j].setIcon(null);
             BoardSquares[c.i][c.j].setActionCommand("king_black");
             messages.append("Black king on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(this.r, this.c) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
-            red_checkers--;
+            redCheckers--;
             try {
 
                 Image img2 = ImageIO.read(getClass().getResource("resources/black_king.png"));
@@ -207,11 +203,11 @@ public class board extends JFrame implements MouseListener, ActionListener {
                 System.out.println(ex);
             }
         }
-        if (red_checkers == 0) {
+        if (redCheckers == 0) {
             messages.append("Game over\n");
             messages.append("Black won\n");
-            wins_black++;
-            score.changeWins(wins_red, wins_black);
+            blackWins++;
+            score.changeWins(redWins, blackWins);
             this.startGame.setEnabled(true);
             this.giveUp.setEnabled(false);
             this.gameOver = true;
@@ -222,11 +218,11 @@ public class board extends JFrame implements MouseListener, ActionListener {
 
                 }
             }
-        } else if (black_checkers == 0) {
+        } else if (blackCheckers == 0) {
             messages.append("Game over\n");
             messages.append("Red won\n");
-            wins_red++;
-            score.changeWins(wins_red, wins_black);
+            redWins++;
+            score.changeWins(redWins, blackWins);
             this.startGame.setEnabled(true);
             this.giveUp.setEnabled(false);
             this.gameOver = true;
@@ -673,12 +669,12 @@ public class board extends JFrame implements MouseListener, ActionListener {
                 messages.append("Game over\n");
                 if (this.player.equals("black")) {
                     messages.append("Red won\n");
-                    wins_red++;
-                    score.changeWins(wins_red, wins_black);
+                    redWins++;
+                    score.changeWins(redWins, blackWins);
                 } else if (this.player.equals("red")) {
                     messages.append("Black won\n");
-                    wins_black++;
-                    score.changeWins(wins_red, wins_black);
+                    blackWins++;
+                    score.changeWins(redWins, blackWins);
                 }
                 this.startGame.setEnabled(true);
                 this.giveUp.setEnabled(false);
@@ -858,12 +854,12 @@ public class board extends JFrame implements MouseListener, ActionListener {
             messages.append("Game over\n");
             if (this.player.equals("black")) {
                 messages.append("Red won\n");
-                wins_red++;
-                score.changeWins(wins_red, wins_black);
+                redWins++;
+                score.changeWins(redWins, blackWins);
             } else if (this.player.equals("red")) {
                 messages.append("Black won\n");
-                wins_black++;
-                score.changeWins(wins_red, wins_black);
+                blackWins++;
+                score.changeWins(redWins, blackWins);
             }
         }
 
