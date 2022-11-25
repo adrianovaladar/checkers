@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import javax.swing.*;
-import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.*;
 
@@ -19,7 +18,6 @@ public class board extends JFrame implements MouseListener, ActionListener {
 
     JLabel[] numbers = new JLabel[9];
     JLabel[] characters = new JLabel[8];
-    Image img;
     Player[] players = new Player[2];
     int i, j, redCheckers, blackCheckers;
     boolean canJump, canMove, gameOver;
@@ -39,7 +37,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
 
     public void showPlayerTurn() {
         playerTurn.setText(players[bool2Int(turn)].getName() + " Turn");
-        if (turn == false)
+        if (!turn)
             playerTurn.setForeground(new Color(255, 0, 0));
         else
             playerTurn.setForeground(new Color(0, 0, 0));
@@ -101,8 +99,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
     }
 
     public int bool2Int(boolean b) {
-        int var = b ? 1 : 0;
-        return var;
+        return b ? 1 : 0;
     }
 
     public void addBoard() {
@@ -173,7 +170,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
         BoardSquares[c.i][c.j].setActionCommand(action);
         BoardSquares[c.i][c.j].setIcon(icon);
         messages.append(players[bool2Int(turn)].getName() + " piece on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
-        if (turn == false) blackCheckers--;
+        if (!turn) blackCheckers--;
         else redCheckers--;
         if (redCheckers == 0 || blackCheckers == 0) {
             messages.append("Game over\n");
@@ -191,9 +188,9 @@ public class board extends JFrame implements MouseListener, ActionListener {
             this.giveUp.setEnabled(false);
             this.gameOver = true;
 
-            for (int i = 0; i < BoardSquares.length; i++) {
+            for (checkers[] boardSquare : BoardSquares) {
                 for (int j = 0; j < BoardSquares.length; j++) {
-                    BoardSquares[i][j].removeMouseListener(this);
+                    boardSquare[j].removeMouseListener(this);
 
                 }
             }
@@ -214,23 +211,27 @@ public class board extends JFrame implements MouseListener, ActionListener {
         BoardSquares[c.i][c.j].setIcon(icon);
     }
 
+    public void clear() {
+        for (int i = 0; i < BoardSquares.length; i++) {
+            for (int j = 0; j < BoardSquares.length; j++) {
+
+                if (i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1) {
+
+                } else {
+                    BoardSquares[i][j].setBackground(new Color(158, 76, 16));
+
+                }
+            }
+        }
+    }
+
     @Override
     public void mouseClicked(MouseEvent m) {
         checkers c = (checkers) m.getSource();
         this.canMove = false;
         if (c.getBackground().equals(new Color(255, 0, 0))) {
             jumpChecker(c);
-            for (int i = 0; i < BoardSquares.length; i++) {
-                for (int j = 0; j < BoardSquares.length; j++) {
-
-                    if (i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1) {
-
-                    } else {
-                        BoardSquares[i][j].setBackground(new Color(158, 76, 16));
-
-                    }
-                }
-            }
+            clear();
             this.canJump = false;
 
             this.pos1i2 = (c.i) - 1;
@@ -250,7 +251,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
             this.pos4i3 = (c.i) + 2;
             this.pos4j3 = (c.j) + 2;
 
-            if (turn == false && BoardSquares[c.i][c.j].getActionCommand().equals("red") || turn == false && BoardSquares[c.i][c.j].getActionCommand().equals("king_red")) {
+            if (!turn && BoardSquares[c.i][c.j].getActionCommand().equals("red") || !turn && BoardSquares[c.i][c.j].getActionCommand().equals("king_red")) {
                 if (canJump(c, c.i, c.j, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
                     this.canJump = true;
                     this.i = c.i;
@@ -279,7 +280,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
                     BoardSquares[i][j].setBackground(new Color(0, 153, 0));
                     BoardSquares[pos4i3][pos4j3].setBackground(new Color(255, 0, 0));
                 }
-            } else if (turn == true && BoardSquares[c.i][c.j].getActionCommand().equals("black") || turn == true && BoardSquares[c.i][c.j].getActionCommand().equals("king_black")) {
+            } else if (turn && BoardSquares[c.i][c.j].getActionCommand().equals("black") || turn && BoardSquares[c.i][c.j].getActionCommand().equals("king_black")) {
                 if (canJump(c, c.i, c.j, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
                     this.canJump = true;
                     this.i = c.i;
@@ -310,7 +311,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
                 }
             }
 
-            if (this.canJump == false && !turn) {
+            if (!this.canJump && !turn) {
                 Toolkit.getDefaultToolkit().beep();
                 if (c.i == 0) {
                     c.king_red();
@@ -318,7 +319,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
                 }
                 changePlayerTurn();
 
-            } else if (this.canJump == false && turn) {
+            } else if (!this.canJump && turn) {
                 Toolkit.getDefaultToolkit().beep();
 
                 if (c.i == 7) {
@@ -329,18 +330,8 @@ public class board extends JFrame implements MouseListener, ActionListener {
             }
         } else if (c.getBackground().equals(new Color(255, 255, 0))) {
             moveChecker(c);
-            for (int i = 0; i < BoardSquares.length; i++) {
-                for (int j = 0; j < BoardSquares.length; j++) {
-
-                    if (i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1) {
-
-                    } else {
-                        BoardSquares[i][j].setBackground(new Color(158, 76, 16));
-
-                    }
-                }
-            }
-            if (turn == false) {
+            clear();
+            if (!turn) {
                 if (c.i == 0) {
                     c.king_red();
                 }
@@ -357,17 +348,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
 
             }
         } else {
-            for (int i = 0; i < BoardSquares.length; i++) {
-                for (int j = 0; j < BoardSquares.length; j++) {
-
-                    if (i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1) {
-
-                    } else {
-                        BoardSquares[i][j].setBackground(new Color(158, 76, 16));
-
-                    }
-                }
-            }
+            clear();
             showLegalMoves(m.getSource());
         }
         //changePlayerTurn();
@@ -410,7 +391,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
                 this.pos3j3 = (col) - 2;
                 this.pos4i3 = (row) + 2;
                 this.pos4j3 = (col) + 2;
-                if (turn == false && BoardSquares[row][col].getActionCommand().equals("red") || turn == false && BoardSquares[row][col].getActionCommand().equals("king_red")) {
+                if (!turn && BoardSquares[row][col].getActionCommand().equals("red") || !turn && BoardSquares[row][col].getActionCommand().equals("king_red")) {
                     if (canMove(c, row, col, this.pos1i2, this.pos1j2)) {
                         this.canMove = true;
                     }
@@ -435,7 +416,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
                     if (canJump(c, row, col, this.pos4i2, this.pos4j2, this.pos4i3, this.pos4j3)) {
                         this.canJump = true;
                     }
-                } else if (turn == true && BoardSquares[row][col].getActionCommand().equals("black") || turn == true && BoardSquares[row][col].getActionCommand().equals("king_black")) {
+                } else if (turn && BoardSquares[row][col].getActionCommand().equals("black") || turn && BoardSquares[row][col].getActionCommand().equals("king_black")) {
 
                     if (canMove(c, row, col, this.pos1i2, this.pos1j2)) {
                         this.canMove = true;
@@ -470,7 +451,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
             }
         }
 
-        if (this.hasChecker(c) && this.canJump == true) {
+        if (this.hasChecker(c) && this.canJump) {
             BoardSquares[c.i][c.j].setBackground(new Color(0, 153, 0));
             this.pos1i2 = (c.i) - 1;
             this.pos1j2 = (c.j) - 1;
@@ -488,7 +469,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
             this.pos3j3 = (c.j) - 2;
             this.pos4i3 = (c.i) + 2;
             this.pos4j3 = (c.j) + 2;
-            if (turn == false && BoardSquares[c.i][c.j].getActionCommand().equals("red") || turn == false && BoardSquares[c.i][c.j].getActionCommand().equals("king_red")) {
+            if (!turn && BoardSquares[c.i][c.j].getActionCommand().equals("red") || !turn && BoardSquares[c.i][c.j].getActionCommand().equals("king_red")) {
                 if (canJump(c, c.i, c.j, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
                     this.canJump = true;
                     BoardSquares[pos1i3][pos1j3].setBackground(new Color(255, 0, 0));
@@ -508,7 +489,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
                     BoardSquares[pos4i3][pos4j3].setBackground(new Color(255, 0, 0));
 
                 }
-            } else if (turn == true && BoardSquares[c.i][c.j].getActionCommand().equals("black") || turn == true && BoardSquares[c.i][c.j].getActionCommand().equals("king_black")) {
+            } else if (turn && BoardSquares[c.i][c.j].getActionCommand().equals("black") || turn && BoardSquares[c.i][c.j].getActionCommand().equals("king_black")) {
                 if (canJump(c, c.i, c.j, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
                     this.canJump = true;
                     BoardSquares[pos1i3][pos1j3].setBackground(new Color(255, 0, 0));
@@ -531,7 +512,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
                 }
             }
             //}
-        } else if (this.hasChecker(c) && this.canJump == false && this.canMove == true) {
+        } else if (this.hasChecker(c) && !this.canJump && this.canMove) {
             pos1i2 = (c.i) - 1;
             pos1j2 = (c.j) - 1;
             pos2i2 = (c.i) - 1;
@@ -543,41 +524,41 @@ public class board extends JFrame implements MouseListener, ActionListener {
             BoardSquares[c.i][c.j].setBackground(new Color(0, 153, 0));
             this.i = c.i;
             this.j = c.j;
-            if (canMove(c, c.i, c.j, this.pos1i2, this.pos1j2) == true) {
+            if (canMove(c, c.i, c.j, this.pos1i2, this.pos1j2)) {
                 BoardSquares[pos1i2][pos1j2].setBackground(new Color(255, 255, 0));
 
             }
-            if (canMove(c, c.i, c.j, this.pos2i2, this.pos2j2) == true) {
+            if (canMove(c, c.i, c.j, this.pos2i2, this.pos2j2)) {
                 BoardSquares[pos2i2][pos2j2].setBackground(new Color(255, 255, 0));
 
             }
-            if (canMove(c, c.i, c.j, this.pos3i2, this.pos3j2) == true) {
+            if (canMove(c, c.i, c.j, this.pos3i2, this.pos3j2)) {
                 BoardSquares[pos3i2][pos3j2].setBackground(new Color(255, 255, 0));
 
             }
-            if (canMove(c, c.i, c.j, this.pos4i2, this.pos4j2) == true) {
+            if (canMove(c, c.i, c.j, this.pos4i2, this.pos4j2)) {
                 BoardSquares[pos4i2][pos4j2].setBackground(new Color(255, 255, 0));
 
             }
-        } else if (this.hasChecker(c) && this.canJump == false && this.canMove == false) {
-            if (turn == false && c.getActionCommand().equals("red") || turn == false && c.getActionCommand().equals("king_red") || turn == true && c.getActionCommand().equals("black") || turn == true && c.getActionCommand().equals("king_black")) {
+        } else if (this.hasChecker(c) && !this.canJump && !this.canMove) {
+            if (!turn && c.getActionCommand().equals("red") || !turn && c.getActionCommand().equals("king_red") || turn && c.getActionCommand().equals("black") || turn && c.getActionCommand().equals("king_black")) {
 
                 messages.append("Game over\n");
-                if (turn == true) {
-                    messages.append("Red won\n");
+                if (turn) {
+                    messages.append(players[bool2Int(turn)].getName() + " won\n");
                     players[0].increaseWins();
                     score.changeWins(players[0].getWins(), players[1].getWins());
-                } else if (turn == false) {
-                    messages.append("Black won\n");
+                } else if (!turn) {
+                    messages.append(players[bool2Int(turn)].getName() + " won\n");
                     players[1].increaseWins();
                     score.changeWins(players[0].getWins(), players[1].getWins());
                 }
                 this.startGame.setEnabled(true);
                 this.giveUp.setEnabled(false);
                 this.gameOver = true;
-                for (int i = 0; i < BoardSquares.length; i++) {
+                for (checkers[] boardSquare : BoardSquares) {
                     for (int j = 0; j < BoardSquares.length; j++) {
-                        BoardSquares[i][j].removeMouseListener(this);
+                        boardSquare[j].removeMouseListener(this);
 
                     }
                 }
@@ -762,8 +743,7 @@ public class board extends JFrame implements MouseListener, ActionListener {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            board content;
-            content = new board();
+            new board();
         });
     }
 }
