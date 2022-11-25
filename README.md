@@ -1,5 +1,4 @@
 # checkers
-Checkers game
 
 A preview of the game:
 
