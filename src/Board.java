@@ -146,8 +146,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
         centerPanel.add(numbers[0]);
 
-        for (JLabel letra : characters) {
-            centerPanel.add(letra);
+        for (JLabel ch : characters) {
+            centerPanel.add(ch);
         }
     }
 
@@ -169,7 +169,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         BoardSquares[this.i][this.j].setIcon(null);
         BoardSquares[c.i][c.j].setActionCommand(action);
         BoardSquares[c.i][c.j].setIcon(icon);
-        messages.append(players[bool2Int(turn)].getName() + " piece on " + this.BoardPosition(this.i, this.j) + " jumped on " + this.BoardPosition(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.BoardPosition(c.i, c.j) + "\n");
+        messages.append(players[bool2Int(turn)].getName() + " piece on " + this.positionToText(this.i, this.j) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.i, c.j) + "\n");
         if (!turn) blackCheckers--;
         else redCheckers--;
         if (redCheckers == 0 || blackCheckers == 0) {
@@ -206,7 +206,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         BoardSquares[this.i][this.j].setActionCommand("");
         BoardSquares[this.i][this.j].setIcon(null);
 
-        messages.append(players[bool2Int(turn)].getName() + " moved piece from " + this.BoardPosition(this.i, this.j) + " to " + this.BoardPosition(c.i, c.j) + "\n");
+        messages.append(players[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(this.i, this.j) + " to " + this.positionToText(c.i, c.j) + "\n");
         BoardSquares[c.i][c.j].setActionCommand(action);
         BoardSquares[c.i][c.j].setIcon(icon);
     }
@@ -315,7 +315,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 Toolkit.getDefaultToolkit().beep();
                 if (c.i == 0) {
                     c.king_red();
-                    messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.BoardPosition(c.i, c.j) + "\n");
+                    messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.i, c.j) + "\n");
                 }
                 changePlayerTurn();
 
@@ -324,7 +324,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
                 if (c.i == 7) {
                     c.king_black();
-                    messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.BoardPosition(c.i, c.j) + "\n");
+                    messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.i, c.j) + "\n");
                 }
                 changePlayerTurn();
             }
@@ -573,7 +573,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         } else if (!BoardSquares[r3][c3].getActionCommand().equals("")) {
 
             return false;  // (r3,c3) already contains a piece.
-        } else if (turn == false) {
+        } else if (!turn) {
             if (BoardSquares[r1][c1].getActionCommand().equals("red") && r3 > r1) {
 
                 return false;  // Regular red piece can only move up.
@@ -617,92 +617,10 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         return false;
     }
 
-    public String BoardPosition(int x, int y) {
-        if (x == 0) {
-            if (y == 1) {
-                return "8B";
-            } else if (y == 3) {
-                return "8D";
-            } else if (y == 5) {
-                return "8F";
-            } else if (y == 7) {
-                return "8H";
-            }
-        } else if (x == 1) {
-            if (y == 0) {
-                return "7A";
-            } else if (y == 2) {
-                return "7C";
-            } else if (y == 4) {
-                return "7E";
-            } else if (y == 6) {
-                return "7G";
-            }
-        }
-        if (x == 2) {
-            if (y == 1) {
-                return "6B";
-            } else if (y == 3) {
-                return "6D";
-            } else if (y == 5) {
-                return "6F";
-            } else if (y == 7) {
-                return "6H";
-            }
-        } else if (x == 3) {
-            if (y == 0) {
-                return "5A";
-            } else if (y == 2) {
-                return "5C";
-            } else if (y == 4) {
-                return "5E";
-            } else if (y == 6) {
-                return "5G";
-            }
-        }
-        if (x == 4) {
-            if (y == 1) {
-                return "4B";
-            } else if (y == 3) {
-                return "4D";
-            } else if (y == 5) {
-                return "4F";
-            } else if (y == 7) {
-                return "4H";
-            }
-        } else if (x == 5) {
-            if (y == 0) {
-                return "3A";
-            } else if (y == 2) {
-                return "3C";
-            } else if (y == 4) {
-                return "3E";
-            } else if (y == 6) {
-                return "3G";
-            }
-        }
-        if (x == 6) {
-            if (y == 1) {
-                return "2B";
-            } else if (y == 3) {
-                return "2D";
-            } else if (y == 5) {
-                return "2F";
-            } else if (y == 7) {
-                return "2H";
-            }
-        } else if (x == 7) {
-            if (y == 0) {
-                return "1A";
-            } else if (y == 2) {
-                return "1C";
-            } else if (y == 4) {
-                return "1E";
-            } else if (y == 6) {
-                return "1G";
-            }
-        }
-        return "";
+    public String positionToText(int x, int y) {
+        String position = "";
+        position += characters[characters.length - x - 1].getText() + (y + 1);
+        return position;
     }
 
     @Override
@@ -742,8 +660,6 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            new Board();
-        });
+        SwingUtilities.invokeLater(Board::new);
     }
 }
