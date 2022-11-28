@@ -10,7 +10,8 @@ public class Checkers extends JButton {
     Icon icon;
 
     public void king_red() {
-        this.setActionCommand("king_red");
+        this.setActionCommand("king");
+        this.setName("red");
         Image img;
 
         try {
@@ -23,7 +24,8 @@ public class Checkers extends JButton {
     }
 
     public void king_black() {
-        this.setActionCommand("king_black");
+        this.setActionCommand("king");
+        this.setName("black");
         Image img;
 
         try {
@@ -36,6 +38,8 @@ public class Checkers extends JButton {
     }
 
     public void redMan() {
+        this.setActionCommand("man");
+        this.setName("red");
         Image img;
         try {
             img = ImageIO.read(getClass().getResource("resources/red_man.png"));
@@ -47,6 +51,8 @@ public class Checkers extends JButton {
     }
 
     public void blackMan() {
+        this.setActionCommand("man");
+        this.setName("black");
         Image img;
         try {
             img = ImageIO.read(getClass().getResource("resources/black_man.png"));
@@ -63,32 +69,25 @@ public class Checkers extends JButton {
         this.setBackground(new Color(158, 76, 16));
 
         if (i < 3) {
-            this.setActionCommand("black");
-
-            try {
-                Image img1 = ImageIO.read(getClass().getResource("resources/black_man.png"));
-                this.setIcon(new ImageIcon(img1));
-
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
+            blackMan();
         } else if (i > 4) {
-            this.setActionCommand("red");
-
-            try {
-
-                Image img2 = ImageIO.read(getClass().getResource("resources/red_man.png"));
-                this.setIcon(new ImageIcon(img2));
-            } catch (Exception ex) {
-                System.out.println(ex);
-            }
+            redMan();
         } else {
             this.setActionCommand("");
+            this.setName("");
             this.setIcon(null);
         }
     }
 
     public Checkers() {
 
+    }
+
+    public boolean isRed() {
+        return this.getName().equals("red");
+    }
+
+    public boolean isBlack() {
+        return this.getName().equals("black");
     }
 }

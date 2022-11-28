@@ -152,7 +152,38 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     public boolean hasChecker(Checkers c) {
-        return !c.getActionCommand().equals("");
+        return !c.getName().equals("");
+    }
+
+    public boolean isGameOver() {
+        if (redCheckers == 0 || blackCheckers == 0) {
+            return true;
+        }
+        return false;
+    }
+
+
+    private void gameOver() {
+        messages.append("Game over\n");
+        String name;
+        if (redCheckers == 0) {
+            name = players[1].getName();
+            players[1].increaseWins();
+        } else {
+            name = players[0].getName();
+            players[0].increaseWins();
+        }
+        messages.append(name + " won\n");
+        score.changeWins(players[0].getWins(), players[1].getWins());
+        this.startGame.setEnabled(true);
+        this.giveUp.setEnabled(false);
+        this.gameOver = true;
+
+        for (Checkers[] boardSquare : BoardSquares) {
+            for (int j = 0; j < BoardSquares.length; j++) {
+                boardSquare[j].removeMouseListener(this);
+            }
+        }
     }
 
     public void jumpChecker(Checkers c) {
@@ -160,53 +191,39 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         int jumpedCheckerColumn;
         jumpedCheckerRow = (this.i + c.i) / 2;
         jumpedCheckerColumn = (this.j + c.j) / 2;
+        BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setName("");
         BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setActionCommand("");
         BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setIcon(null);
 
+        String name = BoardSquares[this.i][this.j].getName();
         String action = BoardSquares[this.i][this.j].getActionCommand();
         Icon icon = BoardSquares[this.i][this.j].getIcon();
         BoardSquares[this.i][this.j].setActionCommand("");
         BoardSquares[this.i][this.j].setIcon(null);
+        BoardSquares[this.i][this.j].setName("");
+        BoardSquares[c.i][c.j].setName(name);
         BoardSquares[c.i][c.j].setActionCommand(action);
         BoardSquares[c.i][c.j].setIcon(icon);
         messages.append(players[bool2Int(turn)].getName() + " piece on " + this.positionToText(this.i, this.j) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.i, c.j) + "\n");
         if (!turn) blackCheckers--;
         else redCheckers--;
-        if (redCheckers == 0 || blackCheckers == 0) {
-            messages.append("Game over\n");
-            String name;
-            if (redCheckers == 0) {
-                name = players[1].getName();
-                players[1].increaseWins();
-            } else {
-                name = players[0].getName();
-                players[0].increaseWins();
-            }
-            messages.append(name + " won\n");
-            score.changeWins(players[0].getWins(), players[1].getWins());
-            this.startGame.setEnabled(true);
-            this.giveUp.setEnabled(false);
-            this.gameOver = true;
-
-            for (Checkers[] boardSquare : BoardSquares) {
-                for (int j = 0; j < BoardSquares.length; j++) {
-                    boardSquare[j].removeMouseListener(this);
-
-                }
-            }
+        if (isGameOver()) {
+            gameOver();
         }
-
     }
 
     public void moveChecker(Checkers c) {
 
+        String name = BoardSquares[this.i][this.j].getName();
         String action = BoardSquares[this.i][this.j].getActionCommand();
         Icon icon = BoardSquares[this.i][this.j].getIcon();
 
+        BoardSquares[this.i][this.j].setName("");
         BoardSquares[this.i][this.j].setActionCommand("");
         BoardSquares[this.i][this.j].setIcon(null);
 
         messages.append(players[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(this.i, this.j) + " to " + this.positionToText(c.i, c.j) + "\n");
+        BoardSquares[c.i][c.j].setName(name);
         BoardSquares[c.i][c.j].setActionCommand(action);
         BoardSquares[c.i][c.j].setIcon(icon);
     }
@@ -214,12 +231,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     public void clear() {
         for (int i = 0; i < BoardSquares.length; i++) {
             for (int j = 0; j < BoardSquares.length; j++) {
-
-                if (i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1) {
-
-                } else {
+                if (!(i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1)) {
                     BoardSquares[i][j].setBackground(new Color(158, 76, 16));
-
                 }
             }
         }
@@ -251,7 +264,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             this.pos4i3 = (c.i) + 2;
             this.pos4j3 = (c.j) + 2;
 
-            if (!turn && BoardSquares[c.i][c.j].getActionCommand().equals("red") || !turn && BoardSquares[c.i][c.j].getActionCommand().equals("king_red")) {
+            if (!turn && c.isRed()) {
                 if (canJump(c, c.i, c.j, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
                     this.canJump = true;
                     this.i = c.i;
@@ -280,7 +293,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                     BoardSquares[i][j].setBackground(new Color(0, 153, 0));
                     BoardSquares[pos4i3][pos4j3].setBackground(new Color(255, 0, 0));
                 }
-            } else if (turn && BoardSquares[c.i][c.j].getActionCommand().equals("black") || turn && BoardSquares[c.i][c.j].getActionCommand().equals("king_black")) {
+            } else if (turn && c.isBlack()) {
                 if (canJump(c, c.i, c.j, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
                     this.canJump = true;
                     this.i = c.i;
@@ -373,79 +386,51 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         this.i = c.i;
 
         this.j = c.j;
+
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
-                this.pos1i2 = (row) - 1;
-                this.pos1j2 = (col) - 1;
-                this.pos2i2 = (row) - 1;
-                this.pos2j2 = (col) + 1;
-                this.pos3i2 = (row) + 1;
-                this.pos3j2 = (col) - 1;
-                this.pos4i2 = (row) + 1;
-                this.pos4j2 = (col) + 1;
-                this.pos1i3 = (row) - 2;
-                this.pos1j3 = (col) - 2;
-                this.pos2i3 = (row) - 2;
-                this.pos2j3 = (col) + 2;
-                this.pos3i3 = (row) + 2;
-                this.pos3j3 = (col) - 2;
-                this.pos4i3 = (row) + 2;
-                this.pos4j3 = (col) + 2;
-                if (!turn && BoardSquares[row][col].getActionCommand().equals("red") || !turn && BoardSquares[row][col].getActionCommand().equals("king_red")) {
-                    if (canMove(c, row, col, this.pos1i2, this.pos1j2)) {
-                        this.canMove = true;
-                    }
-                    if (canMove(c, row, col, this.pos2i2, this.pos2j2)) {
-                        this.canMove = true;
-                    }
-                    if (canMove(c, row, col, this.pos3i2, this.pos3j2)) {
-                        this.canMove = true;
-                    }
-                    if (canMove(c, row, col, this.pos4i2, this.pos4j2)) {
-                        this.canMove = true;
-                    }
-                    if (canJump(c, row, col, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
-                        this.canJump = true;
-                    }
-                    if (canJump(c, row, col, this.pos2i2, this.pos2j2, this.pos2i3, this.pos2j3)) {
-                        this.canJump = true;
-                    }
-                    if (canJump(c, row, col, this.pos3i2, this.pos3j2, this.pos3i3, this.pos3j3)) {
-                        this.canJump = true;
-                    }
-                    if (canJump(c, row, col, this.pos4i2, this.pos4j2, this.pos4i3, this.pos4j3)) {
-                        this.canJump = true;
-                    }
-                } else if (turn && BoardSquares[row][col].getActionCommand().equals("black") || turn && BoardSquares[row][col].getActionCommand().equals("king_black")) {
-
-                    if (canMove(c, row, col, this.pos1i2, this.pos1j2)) {
-                        this.canMove = true;
-
-                    }
-                    if (canMove(c, row, col, this.pos2i2, this.pos2j2)) {
-                        this.canMove = true;
-
-                    }
-                    if (canMove(c, row, col, this.pos3i2, this.pos3j2)) {
-                        this.canMove = true;
-
-                    }
-                    if (canMove(c, row, col, this.pos4i2, this.pos4j2)) {
-                        this.canMove = true;
-
-                    }
-
-                    if (canJump(c, row, col, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
-                        this.canJump = true;
-                    }
-                    if (canJump(c, row, col, this.pos2i2, this.pos2j2, this.pos2i3, this.pos2j3)) {
-                        this.canJump = true;
-                    }
-                    if (canJump(c, row, col, this.pos3i2, this.pos3j2, this.pos3i3, this.pos3j3)) {
-                        this.canJump = true;
-                    }
-                    if (canJump(c, row, col, this.pos4i2, this.pos4j2, this.pos4i3, this.pos4j3)) {
-                        this.canJump = true;
+                if (!((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1))) {
+                    this.pos1i2 = (row) - 1;
+                    this.pos1j2 = (col) - 1;
+                    this.pos2i2 = (row) - 1;
+                    this.pos2j2 = (col) + 1;
+                    this.pos3i2 = (row) + 1;
+                    this.pos3j2 = (col) - 1;
+                    this.pos4i2 = (row) + 1;
+                    this.pos4j2 = (col) + 1;
+                    this.pos1i3 = (row) - 2;
+                    this.pos1j3 = (col) - 2;
+                    this.pos2i3 = (row) - 2;
+                    this.pos2j3 = (col) + 2;
+                    this.pos3i3 = (row) + 2;
+                    this.pos3j3 = (col) - 2;
+                    this.pos4i3 = (row) + 2;
+                    this.pos4j3 = (col) + 2;
+                    if (!turn && BoardSquares[row][col].isRed() || turn && BoardSquares[row][col].isBlack()) {
+                        if (canMove(c, row, col, this.pos1i2, this.pos1j2)) {
+                            this.canMove = true;
+                        }
+                        if (canMove(c, row, col, this.pos2i2, this.pos2j2)) {
+                            this.canMove = true;
+                        }
+                        if (canMove(c, row, col, this.pos3i2, this.pos3j2)) {
+                            this.canMove = true;
+                        }
+                        if (canMove(c, row, col, this.pos4i2, this.pos4j2)) {
+                            this.canMove = true;
+                        }
+                        if (canJump(c, row, col, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
+                            this.canJump = true;
+                        }
+                        if (canJump(c, row, col, this.pos2i2, this.pos2j2, this.pos2i3, this.pos2j3)) {
+                            this.canJump = true;
+                        }
+                        if (canJump(c, row, col, this.pos3i2, this.pos3j2, this.pos3i3, this.pos3j3)) {
+                            this.canJump = true;
+                        }
+                        if (canJump(c, row, col, this.pos4i2, this.pos4j2, this.pos4i3, this.pos4j3)) {
+                            this.canJump = true;
+                        }
                     }
                 }
             }
@@ -469,7 +454,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             this.pos3j3 = (c.j) - 2;
             this.pos4i3 = (c.i) + 2;
             this.pos4j3 = (c.j) + 2;
-            if (!turn && BoardSquares[c.i][c.j].getActionCommand().equals("red") || !turn && BoardSquares[c.i][c.j].getActionCommand().equals("king_red")) {
+            if (!turn && c.isRed()) {
                 if (canJump(c, c.i, c.j, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
                     this.canJump = true;
                     BoardSquares[pos1i3][pos1j3].setBackground(new Color(255, 0, 0));
@@ -489,7 +474,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                     BoardSquares[pos4i3][pos4j3].setBackground(new Color(255, 0, 0));
 
                 }
-            } else if (turn && BoardSquares[c.i][c.j].getActionCommand().equals("black") || turn && BoardSquares[c.i][c.j].getActionCommand().equals("king_black")) {
+            } else if (turn && c.isBlack()) {
                 if (canJump(c, c.i, c.j, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
                     this.canJump = true;
                     BoardSquares[pos1i3][pos1j3].setBackground(new Color(255, 0, 0));
@@ -541,15 +526,15 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
             }
         } else if (this.hasChecker(c) && !this.canJump && !this.canMove) {
-            if (!turn && c.getActionCommand().equals("red") || !turn && c.getActionCommand().equals("king_red") || turn && c.getActionCommand().equals("black") || turn && c.getActionCommand().equals("king_black")) {
+            if (!turn && c.isRed() || turn && c.isBlack()) {
 
                 messages.append("Game over\n");
                 if (turn) {
-                    messages.append(players[bool2Int(turn)].getName() + " won\n");
+                    messages.append(players[bool2Int(!turn)].getName() + " won\n");
                     players[0].increaseWins();
                     score.changeWins(players[0].getWins(), players[1].getWins());
                 } else if (!turn) {
-                    messages.append(players[bool2Int(turn)].getName() + " won\n");
+                    messages.append(players[bool2Int(!turn)].getName() + " won\n");
                     players[1].increaseWins();
                     score.changeWins(players[0].getWins(), players[1].getWins());
                 }
@@ -570,21 +555,21 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
         if (r3 < 0 || r3 >= 8 || c3 < 0 || c3 >= 8) {
             return false;  // (r3,c3) is off the board.
-        } else if (!BoardSquares[r3][c3].getActionCommand().equals("")) {
+        } else if (!BoardSquares[r3][c3].getName().equals("")) {
 
             return false;  // (r3,c3) already contains a piece.
         } else if (!turn) {
-            if (BoardSquares[r1][c1].getActionCommand().equals("red") && r3 > r1) {
+            if (BoardSquares[r1][c1].getName().equals("red") && r3 > r1) {
 
                 return false;  // Regular red piece can only move up.
             }
-            if (BoardSquares[r2][c2].getActionCommand().equals("") || BoardSquares[r2][c2].getActionCommand().equals("red") || BoardSquares[r2][c2].getActionCommand().equals("king_red")) {
+            if (BoardSquares[r2][c2].getName().equals("") || BoardSquares[r2][c2].isRed()) {
                 return false;  // There is no black piece to jump.
             }
         } else {
-            if (BoardSquares[r1][c1].getActionCommand().equals("black") && r3 < r1) {
+            if (BoardSquares[r1][c1].getName().equals("black") && r3 < r1) {
                 return false;  // Regular black piece can only move downn.
-            } else if (BoardSquares[r2][c2].getActionCommand().equals("") || BoardSquares[r2][c2].getActionCommand().equals("black") || BoardSquares[r2][c2].getActionCommand().equals("king_black")) {
+            } else if (BoardSquares[r2][c2].getName().equals("") || BoardSquares[r2][c2].isBlack()) {
                 return false;  // There is no red piece to jump.
             }
         }
@@ -595,22 +580,22 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         //modificar para damas
         if (r2 < 0 || r2 >= 8 || c2 < 0 || c2 >= 8) {
             return false;  // (r2,c2) is off the board.
-        } else if (BoardSquares[r2][c2].getActionCommand().equals("red") || BoardSquares[r2][c2].getActionCommand().equals("black") || BoardSquares[r2][c2].getActionCommand().equals("king_black") || BoardSquares[r2][c2].getActionCommand().equals("king_red")) {
+        } else if (!BoardSquares[r2][c2].getName().equals("")) {
             return false;  // (r2,c2) already contains a piece.
         } else if (turn == false) {
-            if (c.getActionCommand().equals("king_red")) {
+            if (c.getName().equals("red") && c.getActionCommand().equals("king")) {
                 return true;
-            } else if (c.getActionCommand().equals("red") && r2 > r1) {
+            } else if (c.getName().equals("red") && r2 > r1) {
                 return false;  // Regular red piece can only move up.
-            } else if (c.getActionCommand().equals("red")) {
+            } else if (c.getName().equals("red")) {
                 return true;  // The move is legal.
             }
         } else if (turn == true) {
-            if (c.getActionCommand().equals("king_black")) {
+            if (c.getName().equals("black") && c.getActionCommand().equals("king")) {
                 return true;
-            } else if (c.getActionCommand().equals("black") && r2 < r1) {
+            } else if (c.getName().equals("black") && r2 < r1) {
                 return false;  // Regular black piece can only move down.
-            } else if (c.getActionCommand().equals("black")) {
+            } else if (c.getName().equals("black")) {
                 return true;  // The move is legal.
             }
         }
@@ -647,11 +632,11 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             }
             messages.append("Game over\n");
             if (turn == true) {
-                messages.append("Red won\n");
+                messages.append(players[0].getName() + " won\n");
                 players[0].increaseWins();
                 score.changeWins(players[0].getWins(), players[1].getWins());
             } else if (turn == false) {
-                messages.append("Black won\n");
+                messages.append(players[0].getName() + " won\n");
                 players[1].increaseWins();
                 score.changeWins(players[0].getWins(), players[1].getWins());
             }
