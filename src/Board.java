@@ -521,11 +521,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void changeColourMove(Checkers c) {
-        Pair<Integer, Integer>[] positions = new Pair[4];
-        positions[0] = new Pair(c.i - 1, c.j - 1);
-        positions[1] = new Pair(c.i - 1, c.j + 1);
-        positions[2] = new Pair(c.i + 1, c.j + 1);
-        positions[3] = new Pair(c.i + 1, c.j - 1);
+        Pair<Integer, Integer>[] positions = getSurroundingPositionsToMove(c);
         for (Pair<Integer, Integer> p : positions) {
             if (p.getKey().intValue() < 0 || p.getKey().intValue() >= 8 || p.getValue().intValue() < 0 || p.getValue().intValue() >= 8) {
                 continue;  // (r2,c2) is off the board.
@@ -542,34 +538,51 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
     }
 
-    public boolean canJump(Checkers c, int r1, int c1, int r2, int c2, int r3, int c3) {
-        if (r3 < 0 || r3 >= 8 || c3 < 0 || c3 >= 8) {
-            return false;  // (r3,c3) is off the board.
-        } else if (!BoardSquares[r3][c3].getName().equals("")) {
-            return false;  // (r3,c3) already contains a piece.
-        } else if (!turn) {
-            if (BoardSquares[r1][c1].getName().equals("red") && BoardSquares[r1][c1].isMan() && r3 > r1) {
-                return false;  // Regular red piece can only move up.
+    private void changeColourJump(Checkers c) { //todo: refactor
+        Pair<Integer, Integer>[] positions = getSurroundingPositionsToMove(c);
+        for (Pair<Integer, Integer> p : positions) {
+            if (p.getKey().intValue() < 0 || p.getKey().intValue() >= 8 || p.getValue().intValue() < 0 || p.getValue().intValue() >= 8) {
+                continue;  // (r2,c2) is off the board.
+            } else if (!BoardSquares[p.getKey().intValue()][p.getValue().intValue()].getName().equals("")) {
+                continue;  // (r2,c2) already contains a piece.
             }
-            if (BoardSquares[r2][c2].getName().equals("") || BoardSquares[r2][c2].isRed()) {
-                return false;  // There is no black piece to jump.
+            if ((!turn && c.isRed() || turn && c.isBlack()) && c.getActionCommand().equals("king")) {
+                BoardSquares[p.getKey().intValue()][p.getValue().intValue()].setBackground(new Color(255, 255, 0));
+            } else if (!turn && c.isRed() && p.getKey().intValue() > c.i || turn && c.isBlack() && p.getKey().intValue() < c.i) {
+                // Regular red piece can only move up and regular black piece can only move down.
+            } else if (!turn && c.isRed() || turn && c.isBlack()) {
+                BoardSquares[p.getKey().intValue()][p.getValue().intValue()].setBackground(new Color(255, 255, 0));
             }
-        } else {
-            if (BoardSquares[r1][c1].isBlack() && BoardSquares[r1][c1].isMan() && r3 < r1) {
-                return false;  // Regular black piece can only move downn.
-            } else if (BoardSquares[r2][c2].getName().equals("") || BoardSquares[r2][c2].isBlack()) {
-                return false;  // There is no red piece to jump.
+        }
+    }
+
+    public boolean canJump(Checkers c, int r1, int c1, int r2, int c2, int r3, int c3) { // todo: refactor
+        Pair<Integer, Integer>[] positions = getSurroundingPositionsToJump(c);
+        for (Pair<Integer, Integer> p : positions) {
+            if (p.getKey().intValue() < 0 || p.getKey().intValue() >= 8 || p.getValue().intValue() < 0 || p.getValue().intValue() >= 8) {
+                return false;  // (r3,c3) is off the board.
+            } else if (!BoardSquares[r3][c3].getName().equals("")) {
+                return false;  // (r3,c3) already contains a piece.
+            } else if (!turn) {
+                if (BoardSquares[r1][c1].getName().equals("red") && BoardSquares[r1][c1].isMan() && r3 > r1) {
+                    return false;  // Regular red piece can only move up.
+                }
+                if (BoardSquares[r2][c2].getName().equals("") || BoardSquares[r2][c2].isRed()) {
+                    return false;  // There is no black piece to jump.
+                }
+            } else {
+                if (BoardSquares[r1][c1].isBlack() && BoardSquares[r1][c1].isMan() && r3 < r1) {
+                    return false;  // Regular black piece can only move down.
+                } else if (BoardSquares[r2][c2].getName().equals("") || BoardSquares[r2][c2].isBlack()) {
+                    return false;  // There is no red piece to jump.
+                }
             }
         }
         return true;
     }
 
     public boolean canMove(Checkers c) {
-        Pair<Integer, Integer>[] positions = new Pair[4];
-        positions[0] = new Pair(c.i - 1, c.j - 1);
-        positions[1] = new Pair(c.i - 1, c.j + 1);
-        positions[2] = new Pair(c.i + 1, c.j + 1);
-        positions[3] = new Pair(c.i + 1, c.j - 1);
+        Pair<Integer, Integer>[] positions = getSurroundingPositionsToMove(c);
         for (Pair<Integer, Integer> p : positions) {
             if (p.getKey().intValue() < 0 || p.getKey().intValue() >= 8 || p.getValue().intValue() < 0 || p.getValue().intValue() >= 8) {
                 continue;  // (r2,c2) is off the board.
@@ -585,6 +598,24 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             }
         }
         return false;
+    }
+
+    private Pair<Integer, Integer>[] getSurroundingPositionsToMove(Checkers c) {
+        Pair<Integer, Integer>[] positions = new Pair[4];
+        positions[0] = new Pair(c.i - 1, c.j - 1);
+        positions[1] = new Pair(c.i - 1, c.j + 1);
+        positions[2] = new Pair(c.i + 1, c.j + 1);
+        positions[3] = new Pair(c.i + 1, c.j - 1);
+        return positions;
+    }
+
+    private Pair<Integer, Integer>[] getSurroundingPositionsToJump(Checkers c) {
+        Pair<Integer, Integer>[] positions = new Pair[4];
+        positions[0] = new Pair(c.i - 2, c.j - 2);
+        positions[1] = new Pair(c.i - 2, c.j + 2);
+        positions[2] = new Pair(c.i + 2, c.j + 2);
+        positions[3] = new Pair(c.i + 2, c.j - 2);
+        return positions;
     }
 
     public String positionToText(int x, int y) {
