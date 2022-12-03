@@ -1,8 +1,6 @@
-
-import java.awt.Color;
-import java.awt.Image;
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
 
 public class Checkers extends JButton {
 
@@ -89,5 +87,9 @@ public class Checkers extends JButton {
 
     public boolean isBlack() {
         return this.getName().equals("black");
+    }
+
+    public boolean isMan() {
+        return this.getActionCommand().equals("man");
     }
 }

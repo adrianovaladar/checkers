@@ -1,11 +1,11 @@
+import javafx.util.Pair;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridLayout;
 import javax.swing.*;
-import java.awt.Toolkit;
-import java.awt.event.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 public class Board extends JFrame implements MouseListener, ActionListener {
 
@@ -387,8 +387,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
         this.j = c.j;
 
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
+        for (int row = 0; row < BoardSquares.length; row++) {
+            for (int col = 0; col < BoardSquares.length; col++) {
                 if (!((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1))) {
                     this.pos1i2 = (row) - 1;
                     this.pos1j2 = (col) - 1;
@@ -407,16 +407,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                     this.pos4i3 = (row) + 2;
                     this.pos4j3 = (col) + 2;
                     if (!turn && BoardSquares[row][col].isRed() || turn && BoardSquares[row][col].isBlack()) {
-                        if (canMove(c, row, col, this.pos1i2, this.pos1j2)) {
-                            this.canMove = true;
-                        }
-                        if (canMove(c, row, col, this.pos2i2, this.pos2j2)) {
-                            this.canMove = true;
-                        }
-                        if (canMove(c, row, col, this.pos3i2, this.pos3j2)) {
-                            this.canMove = true;
-                        }
-                        if (canMove(c, row, col, this.pos4i2, this.pos4j2)) {
+                        if (canMove(BoardSquares[row][col])) {
                             this.canMove = true;
                         }
                         if (canJump(c, row, col, this.pos1i2, this.pos1j2, this.pos1i3, this.pos1j3)) {
@@ -498,36 +489,14 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             }
             //}
         } else if (this.hasChecker(c) && !this.canJump && this.canMove) {
-            pos1i2 = (c.i) - 1;
-            pos1j2 = (c.j) - 1;
-            pos2i2 = (c.i) - 1;
-            pos2j2 = (c.j) + 1;
-            pos3i2 = (c.i) + 1;
-            pos3j2 = (c.j) - 1;
-            pos4i2 = (c.i) + 1;
-            pos4j2 = (c.j) + 1;
             BoardSquares[c.i][c.j].setBackground(new Color(0, 153, 0));
             this.i = c.i;
             this.j = c.j;
-            if (canMove(c, c.i, c.j, this.pos1i2, this.pos1j2)) {
-                BoardSquares[pos1i2][pos1j2].setBackground(new Color(255, 255, 0));
-
-            }
-            if (canMove(c, c.i, c.j, this.pos2i2, this.pos2j2)) {
-                BoardSquares[pos2i2][pos2j2].setBackground(new Color(255, 255, 0));
-
-            }
-            if (canMove(c, c.i, c.j, this.pos3i2, this.pos3j2)) {
-                BoardSquares[pos3i2][pos3j2].setBackground(new Color(255, 255, 0));
-
-            }
-            if (canMove(c, c.i, c.j, this.pos4i2, this.pos4j2)) {
-                BoardSquares[pos4i2][pos4j2].setBackground(new Color(255, 255, 0));
-
+            if (canMove(c)) {
+                changeColourMove(c);
             }
         } else if (this.hasChecker(c) && !this.canJump && !this.canMove) {
             if (!turn && c.isRed() || turn && c.isBlack()) {
-
                 messages.append("Game over\n");
                 if (turn) {
                     messages.append(players[bool2Int(!turn)].getName() + " won\n");
@@ -551,23 +520,42 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
     }
 
-    public boolean canJump(Checkers c, int r1, int c1, int r2, int c2, int r3, int c3) {
+    private void changeColourMove(Checkers c) {
+        Pair<Integer, Integer>[] positions = new Pair[4];
+        positions[0] = new Pair(c.i - 1, c.j - 1);
+        positions[1] = new Pair(c.i - 1, c.j + 1);
+        positions[2] = new Pair(c.i + 1, c.j + 1);
+        positions[3] = new Pair(c.i + 1, c.j - 1);
+        for (Pair<Integer, Integer> p : positions) {
+            if (p.getKey().intValue() < 0 || p.getKey().intValue() >= 8 || p.getValue().intValue() < 0 || p.getValue().intValue() >= 8) {
+                continue;  // (r2,c2) is off the board.
+            } else if (!BoardSquares[p.getKey().intValue()][p.getValue().intValue()].getName().equals("")) {
+                continue;  // (r2,c2) already contains a piece.
+            }
+            if ((!turn && c.isRed() || turn && c.isBlack()) && c.getActionCommand().equals("king")) {
+                BoardSquares[p.getKey().intValue()][p.getValue().intValue()].setBackground(new Color(255, 255, 0));
+            } else if (!turn && c.isRed() && p.getKey().intValue() > c.i || turn && c.isBlack() && p.getKey().intValue() < c.i) {
+                // Regular red piece can only move up and regular black piece can only move down.
+            } else if (!turn && c.isRed() || turn && c.isBlack()) {
+                BoardSquares[p.getKey().intValue()][p.getValue().intValue()].setBackground(new Color(255, 255, 0));
+            }
+        }
+    }
 
+    public boolean canJump(Checkers c, int r1, int c1, int r2, int c2, int r3, int c3) {
         if (r3 < 0 || r3 >= 8 || c3 < 0 || c3 >= 8) {
             return false;  // (r3,c3) is off the board.
         } else if (!BoardSquares[r3][c3].getName().equals("")) {
-
             return false;  // (r3,c3) already contains a piece.
         } else if (!turn) {
-            if (BoardSquares[r1][c1].getName().equals("red") && r3 > r1) {
-
+            if (BoardSquares[r1][c1].getName().equals("red") && BoardSquares[r1][c1].isMan() && r3 > r1) {
                 return false;  // Regular red piece can only move up.
             }
             if (BoardSquares[r2][c2].getName().equals("") || BoardSquares[r2][c2].isRed()) {
                 return false;  // There is no black piece to jump.
             }
         } else {
-            if (BoardSquares[r1][c1].getName().equals("black") && r3 < r1) {
+            if (BoardSquares[r1][c1].isBlack() && BoardSquares[r1][c1].isMan() && r3 < r1) {
                 return false;  // Regular black piece can only move downn.
             } else if (BoardSquares[r2][c2].getName().equals("") || BoardSquares[r2][c2].isBlack()) {
                 return false;  // There is no red piece to jump.
@@ -576,26 +564,23 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         return true;
     }
 
-    public boolean canMove(Checkers c, int r1, int c1, int r2, int c2) {
-        //modificar para damas
-        if (r2 < 0 || r2 >= 8 || c2 < 0 || c2 >= 8) {
-            return false;  // (r2,c2) is off the board.
-        } else if (!BoardSquares[r2][c2].getName().equals("")) {
-            return false;  // (r2,c2) already contains a piece.
-        } else if (turn == false) {
-            if (c.getName().equals("red") && c.getActionCommand().equals("king")) {
-                return true;
-            } else if (c.getName().equals("red") && r2 > r1) {
-                return false;  // Regular red piece can only move up.
-            } else if (c.getName().equals("red")) {
-                return true;  // The move is legal.
+    public boolean canMove(Checkers c) {
+        Pair<Integer, Integer>[] positions = new Pair[4];
+        positions[0] = new Pair(c.i - 1, c.j - 1);
+        positions[1] = new Pair(c.i - 1, c.j + 1);
+        positions[2] = new Pair(c.i + 1, c.j + 1);
+        positions[3] = new Pair(c.i + 1, c.j - 1);
+        for (Pair<Integer, Integer> p : positions) {
+            if (p.getKey().intValue() < 0 || p.getKey().intValue() >= 8 || p.getValue().intValue() < 0 || p.getValue().intValue() >= 8) {
+                continue;  // (r2,c2) is off the board.
+            } else if (!BoardSquares[p.getKey().intValue()][p.getValue().intValue()].getName().equals("")) {
+                continue;  // (r2,c2) already contains a piece.
             }
-        } else if (turn == true) {
-            if (c.getName().equals("black") && c.getActionCommand().equals("king")) {
+            if ((!turn && c.isRed() || turn && c.isBlack()) && c.getActionCommand().equals("king")) {
                 return true;
-            } else if (c.getName().equals("black") && r2 < r1) {
-                return false;  // Regular black piece can only move down.
-            } else if (c.getName().equals("black")) {
+            } else if (!turn && c.isRed() && p.getKey().intValue() > c.i || turn && c.isBlack() && p.getKey().intValue() < c.i) {
+                // Regular red piece can only move up and regular black piece can only move down.
+            } else if (!turn && c.isRed() || turn && c.isBlack()) {
                 return true;  // The move is legal.
             }
         }
@@ -619,6 +604,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             this.gameOver = false;
             messages.append("Game started. Select a checker to see the options\n");
             turn = false;
+            showPlayerTurn();
 
         } else if (this.gameOver == false) {
             this.gameOver = true;
