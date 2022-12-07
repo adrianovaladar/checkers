@@ -460,9 +460,9 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         return positions;
     }
 
-    private String positionToText(int x, int y) {
+    private String positionToText(int y, int x) {
         String position = "";
-        position += characters[y].getText() + (BoardSquares.length - x);
+        position += characters[x].getText() + (BoardSquares.length - y);
         return position;
     }
 
