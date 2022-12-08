@@ -19,7 +19,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     JLabel[] numbers = new JLabel[9];
     JLabel[] characters = new JLabel[8];
     Player[] players = new Player[2];
-    int i, j, redCheckers, blackCheckers;
+    int redCheckers, blackCheckers;
+    Pair<Integer, Integer> positionCurrentChecker;
     boolean canJump, canMove, gameOver;
     Messages messages = new Messages();
     JButton startGame = new JButton();
@@ -188,22 +189,22 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     private void jumpChecker(Checker c) {
         int jumpedCheckerRow;
         int jumpedCheckerColumn;
-        jumpedCheckerRow = (this.i + c.position.getKey()) / 2;
-        jumpedCheckerColumn = (this.j + c.position.getValue()) / 2;
+        jumpedCheckerRow = (positionCurrentChecker.getKey() + c.position.getKey()) / 2;
+        jumpedCheckerColumn = (positionCurrentChecker.getValue() + c.position.getValue()) / 2;
         BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setName("");
         BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setActionCommand("");
         BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setIcon(null);
 
-        String name = BoardSquares[this.i][this.j].getName();
-        String action = BoardSquares[this.i][this.j].getActionCommand();
-        Icon icon = BoardSquares[this.i][this.j].getIcon();
-        BoardSquares[this.i][this.j].setActionCommand("");
-        BoardSquares[this.i][this.j].setIcon(null);
-        BoardSquares[this.i][this.j].setName("");
+        String name = BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getName();
+        String action = BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getActionCommand();
+        Icon icon = BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getIcon();
+        BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand("");
+        BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setIcon(null);
+        BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setName("");
         BoardSquares[c.position.getKey()][c.position.getValue()].setName(name);
         BoardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
         BoardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
-        messages.append(players[bool2Int(turn)].getName() + " piece on " + this.positionToText(this.i, this.j) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+        messages.append(players[bool2Int(turn)].getName() + " piece on " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
         if (!turn) blackCheckers--;
         else redCheckers--;
         if (isGameOver()) {
@@ -212,16 +213,15 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void moveChecker(Checker c) {
+        String name = BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getName();
+        String action = BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getActionCommand();
+        Icon icon = BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getIcon();
 
-        String name = BoardSquares[this.i][this.j].getName();
-        String action = BoardSquares[this.i][this.j].getActionCommand();
-        Icon icon = BoardSquares[this.i][this.j].getIcon();
+        BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setName("");
+        BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand("");
+        BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setIcon(null);
 
-        BoardSquares[this.i][this.j].setName("");
-        BoardSquares[this.i][this.j].setActionCommand("");
-        BoardSquares[this.i][this.j].setIcon(null);
-
-        messages.append(players[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(this.i, this.j) + " to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+        messages.append(players[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
         BoardSquares[c.position.getKey()][c.position.getValue()].setName(name);
         BoardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
         BoardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
@@ -249,9 +249,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             if (!turn && c.isRed() || turn && c.isBlack()) {
                 if (canJump(c)) {
                     this.canJump = true;
-                    this.i = c.position.getKey();
-                    this.j = c.position.getValue();
-                    BoardSquares[i][j].setBackground(new Color(0, 153, 0));
+                    positionCurrentChecker = c.position;
+                    BoardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setBackground(new Color(0, 153, 0));
                     changeColourJump(c);
                 }
             }
@@ -315,9 +314,9 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
     private void showLegalMoves(Object m) {
         Checker c = (Checker) m;
-        this.i = c.position.getKey();
+        positionCurrentChecker = c.position;
 
-        this.j = c.position.getValue();
+        positionCurrentChecker = c.position;
 
         for (int row = 0; row < BoardSquares.length; row++) {
             for (int col = 0; col < BoardSquares.length; col++) {
@@ -344,8 +343,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             }
         } else if (this.hasChecker(c) && !this.canJump && this.canMove) {
             BoardSquares[c.position.getKey()][c.position.getValue()].setBackground(new Color(0, 153, 0));
-            this.i = c.position.getKey();
-            this.j = c.position.getValue();
+            positionCurrentChecker = c.position;
             if (canMove(c)) {
                 changeColourMove(c);
             }
