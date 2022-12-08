@@ -9,7 +9,7 @@ import java.awt.event.MouseListener;
 
 public class Board extends JFrame implements MouseListener, ActionListener {
 
-    Checkers[][] BoardSquares = new Checkers[8][8];
+    Checker[][] BoardSquares = new Checker[8][8];
 
     JPanel centerPanel = new JPanel();
     JPanel northPanel = new JPanel();
@@ -113,7 +113,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             JLabel j1 = new JLabel(8 - i + "", SwingConstants.CENTER);
             centerPanel.add(j1);
             for (int j = 0; j < BoardSquares.length; j++) {
-                Checkers b = new Checkers();
+                Checker b = new Checker();
                 b.setBorder(null);
                 if (i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1) {
                     b.setBackground(new Color(249, 192, 102));
@@ -121,17 +121,17 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
                 } else {
                     if (i < 3) {
-                        Checkers black = new Checkers(i, j);
+                        Checker black = new Checker(i, j);
                         BoardSquares[i][j] = black;
                         //BoardSquares[i][j].addActionListener(this);
 
                     } else if (i > 4) {
-                        Checkers red = new Checkers(i, j);
+                        Checker red = new Checker(i, j);
                         BoardSquares[i][j] = red;
                         //BoardSquares[i][j].addActionListener(this);
 
                     } else {
-                        Checkers c = new Checkers(i, j);
+                        Checker c = new Checker(i, j);
                         c.setBackground(new Color(158, 76, 16));
                         BoardSquares[i][j] = c;
 
@@ -150,7 +150,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
     }
 
-    private boolean hasChecker(Checkers c) {
+    private boolean hasChecker(Checker c) {
         return !c.getName().equals("");
     }
 
@@ -178,18 +178,18 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         this.giveUp.setEnabled(false);
         this.gameOver = true;
 
-        for (Checkers[] boardSquare : BoardSquares) {
+        for (Checker[] boardSquare : BoardSquares) {
             for (int j = 0; j < BoardSquares.length; j++) {
                 boardSquare[j].removeMouseListener(this);
             }
         }
     }
 
-    private void jumpChecker(Checkers c) {
+    private void jumpChecker(Checker c) {
         int jumpedCheckerRow;
         int jumpedCheckerColumn;
-        jumpedCheckerRow = (this.i + c.i) / 2;
-        jumpedCheckerColumn = (this.j + c.j) / 2;
+        jumpedCheckerRow = (this.i + c.position.getKey()) / 2;
+        jumpedCheckerColumn = (this.j + c.position.getValue()) / 2;
         BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setName("");
         BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setActionCommand("");
         BoardSquares[jumpedCheckerRow][jumpedCheckerColumn].setIcon(null);
@@ -200,10 +200,10 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         BoardSquares[this.i][this.j].setActionCommand("");
         BoardSquares[this.i][this.j].setIcon(null);
         BoardSquares[this.i][this.j].setName("");
-        BoardSquares[c.i][c.j].setName(name);
-        BoardSquares[c.i][c.j].setActionCommand(action);
-        BoardSquares[c.i][c.j].setIcon(icon);
-        messages.append(players[bool2Int(turn)].getName() + " piece on " + this.positionToText(this.i, this.j) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.i, c.j) + "\n");
+        BoardSquares[c.position.getKey()][c.position.getValue()].setName(name);
+        BoardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
+        BoardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
+        messages.append(players[bool2Int(turn)].getName() + " piece on " + this.positionToText(this.i, this.j) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
         if (!turn) blackCheckers--;
         else redCheckers--;
         if (isGameOver()) {
@@ -211,7 +211,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
     }
 
-    private void moveChecker(Checkers c) {
+    private void moveChecker(Checker c) {
 
         String name = BoardSquares[this.i][this.j].getName();
         String action = BoardSquares[this.i][this.j].getActionCommand();
@@ -221,10 +221,10 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         BoardSquares[this.i][this.j].setActionCommand("");
         BoardSquares[this.i][this.j].setIcon(null);
 
-        messages.append(players[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(this.i, this.j) + " to " + this.positionToText(c.i, c.j) + "\n");
-        BoardSquares[c.i][c.j].setName(name);
-        BoardSquares[c.i][c.j].setActionCommand(action);
-        BoardSquares[c.i][c.j].setIcon(icon);
+        messages.append(players[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(this.i, this.j) + " to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+        BoardSquares[c.position.getKey()][c.position.getValue()].setName(name);
+        BoardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
+        BoardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
     }
 
     private void clear() {
@@ -239,7 +239,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
     @Override
     public void mouseClicked(MouseEvent m) {
-        Checkers c = (Checkers) m.getSource();
+        Checker c = (Checker) m.getSource();
         this.canMove = false;
         if (c.getBackground().equals(new Color(255, 0, 0))) {
             jumpChecker(c);
@@ -249,8 +249,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             if (!turn && c.isRed() || turn && c.isBlack()) {
                 if (canJump(c)) {
                     this.canJump = true;
-                    this.i = c.i;
-                    this.j = c.j;
+                    this.i = c.position.getKey();
+                    this.j = c.position.getValue();
                     BoardSquares[i][j].setBackground(new Color(0, 153, 0));
                     changeColourJump(c);
                 }
@@ -258,18 +258,18 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
             if (!this.canJump && !turn) {
                 Toolkit.getDefaultToolkit().beep();
-                if (c.i == 0) {
-                    c.king_red();
-                    messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.i, c.j) + "\n");
+                if (c.position.getKey() == 0) {
+                    c.kingRed();
+                    messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
                 changePlayerTurn();
 
             } else if (!this.canJump && turn) {
                 Toolkit.getDefaultToolkit().beep();
 
-                if (c.i == 7) {
-                    c.king_black();
-                    messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.i, c.j) + "\n");
+                if (c.position.getKey() == 7) {
+                    c.kingBlack();
+                    messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
                 changePlayerTurn();
             }
@@ -277,16 +277,16 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             moveChecker(c);
             clear();
             if (!turn) {
-                if (c.i == 0) {
-                    c.king_red();
+                if (c.position.getKey() == 0) {
+                    c.kingRed();
                 }
                 changePlayerTurn();
                 Toolkit.getDefaultToolkit().beep();
 
             } else {
-                if (c.i == 7) {
+                if (c.position.getKey() == 7) {
 
-                    c.king_black();
+                    c.kingBlack();
                 }
                 changePlayerTurn();
                 Toolkit.getDefaultToolkit().beep();
@@ -314,10 +314,10 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void showLegalMoves(Object m) {
-        Checkers c = (Checkers) m;
-        this.i = c.i;
+        Checker c = (Checker) m;
+        this.i = c.position.getKey();
 
-        this.j = c.j;
+        this.j = c.position.getValue();
 
         for (int row = 0; row < BoardSquares.length; row++) {
             for (int col = 0; col < BoardSquares.length; col++) {
@@ -335,7 +335,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
 
         if (this.hasChecker(c) && this.canJump) {
-            BoardSquares[c.i][c.j].setBackground(new Color(0, 153, 0));
+            BoardSquares[c.position.getKey()][c.position.getValue()].setBackground(new Color(0, 153, 0));
             if (!turn && c.isRed() || turn && c.isBlack()) {
                 if (canJump(c)) {
                     this.canJump = true;
@@ -343,9 +343,9 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 }
             }
         } else if (this.hasChecker(c) && !this.canJump && this.canMove) {
-            BoardSquares[c.i][c.j].setBackground(new Color(0, 153, 0));
-            this.i = c.i;
-            this.j = c.j;
+            BoardSquares[c.position.getKey()][c.position.getValue()].setBackground(new Color(0, 153, 0));
+            this.i = c.position.getKey();
+            this.j = c.position.getValue();
             if (canMove(c)) {
                 changeColourMove(c);
             }
@@ -364,7 +364,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 this.startGame.setEnabled(true);
                 this.giveUp.setEnabled(false);
                 this.gameOver = true;
-                for (Checkers[] boardSquare : BoardSquares) {
+                for (Checker[] boardSquare : BoardSquares) {
                     for (int j = 0; j < BoardSquares.length; j++) {
                         boardSquare[j].removeMouseListener(this);
 
@@ -374,7 +374,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
     }
 
-    private void changeColourMove(Checkers c) {
+    private void changeColourMove(Checker c) {
         Pair<Integer, Integer>[] positions = getSurroundingPositionsToMove(c);
         for (Pair<Integer, Integer> p : positions) {
             if (p.getKey().intValue() < 0 || p.getKey().intValue() >= 8 || p.getValue().intValue() < 0 || p.getValue().intValue() >= 8) {
@@ -384,7 +384,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             }
             if ((!turn && c.isRed() || turn && c.isBlack()) && c.getActionCommand().equals("king")) {
                 BoardSquares[p.getKey().intValue()][p.getValue().intValue()].setBackground(new Color(255, 255, 0));
-            } else if (!turn && c.isRed() && p.getKey().intValue() > c.i || turn && c.isBlack() && p.getKey().intValue() < c.i) {
+            } else if (!turn && c.isRed() && p.getKey().intValue() > c.position.getKey() || turn && c.isBlack() && p.getKey().intValue() < c.position.getKey()) {
                 // Regular red piece can only move up and regular black piece can only move down.
             } else if (!turn && c.isRed() || turn && c.isBlack()) {
                 BoardSquares[p.getKey().intValue()][p.getValue().intValue()].setBackground(new Color(255, 255, 0));
@@ -392,38 +392,38 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
     }
 
-    private void changeColourJump(Checkers c) { //todo: refactor
+    private void changeColourJump(Checker c) { //todo: refactor
         Pair<Integer, Integer>[] positions = getSurroundingPositionsToJump(c);
         for (Pair<Integer, Integer> p : positions) {
             if (p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) {
                 continue;  // p is off the board.
             } else if (!BoardSquares[p.getKey()][p.getValue()].getName().equals("")) {
                 continue;  // p already contains a piece.
-            } else if (BoardSquares[c.i][c.j].getName().equals("red") && BoardSquares[c.i][c.j].isMan() && p.getKey().intValue() > c.i || BoardSquares[c.i][c.j].isBlack() && BoardSquares[c.i][c.j].isMan() && p.getKey().intValue() < c.i) {
+            } else if (BoardSquares[c.position.getKey()][c.position.getValue()].getName().equals("red") && BoardSquares[c.position.getKey()][c.position.getValue()].isMan() && p.getKey().intValue() > c.position.getKey() || BoardSquares[c.position.getKey()][c.position.getValue()].isBlack() && BoardSquares[c.position.getKey()][c.position.getValue()].isMan() && p.getKey().intValue() < c.position.getKey()) {
                 continue;  // Red turn: Regular red piece can only jump up. Black turn: Regular black piece can only jump down.
-            } else if ((!turn && BoardSquares[(c.i + p.getKey()) / 2][(c.j + p.getValue()) / 2].isBlack()) || (turn && BoardSquares[(c.i + p.getKey()) / 2][(c.j + p.getValue()) / 2].isRed())) {
+            } else if ((!turn && BoardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && BoardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed())) {
                 BoardSquares[p.getKey()][p.getValue()].setBackground(new Color(255, 0, 0)); // Red turn: There is a black piece to jump. Black turn: There is a red piece to jump.
             }
         }
     }
 
-    private boolean canJump(Checkers c) {
+    private boolean canJump(Checker c) {
         Pair<Integer, Integer>[] positionsJump = getSurroundingPositionsToJump(c);
         for (Pair<Integer, Integer> p : positionsJump) {
             if (p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) {
                 continue;  // p is off the board.
             } else if (!BoardSquares[p.getKey()][p.getValue()].getName().equals("")) {
                 continue;  // p already contains a piece.
-            } else if (BoardSquares[c.i][c.j].getName().equals("red") && BoardSquares[c.i][c.j].isMan() && p.getKey().intValue() > c.i || BoardSquares[c.i][c.j].isBlack() && BoardSquares[c.i][c.j].isMan() && p.getKey().intValue() < c.i) {
+            } else if (BoardSquares[c.position.getKey()][c.position.getValue()].getName().equals("red") && BoardSquares[c.position.getKey()][c.position.getValue()].isMan() && p.getKey().intValue() > c.position.getKey() || BoardSquares[c.position.getKey()][c.position.getValue()].isBlack() && BoardSquares[c.position.getKey()][c.position.getValue()].isMan() && p.getKey().intValue() < c.position.getKey()) {
                 continue;  // Red turn: Regular red piece can only jump up. Black turn: Regular black piece can only jump down.
-            } else if ((!turn && BoardSquares[(c.i + p.getKey()) / 2][(c.j + p.getValue()) / 2].isBlack()) || (turn && BoardSquares[(c.i + p.getKey()) / 2][(c.j + p.getValue()) / 2].isRed())) {
+            } else if ((!turn && BoardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && BoardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed())) {
                 return true; // Red turn: There is a black piece to jump. Black turn: There is a red piece to jump.
             }
         }
         return false;
     }
 
-    private boolean canMove(Checkers c) {
+    private boolean canMove(Checker c) {
         Pair<Integer, Integer>[] positions = getSurroundingPositionsToMove(c);
         for (Pair<Integer, Integer> p : positions) {
             if (p.getKey().intValue() < 0 || p.getKey().intValue() >= 8 || p.getValue().intValue() < 0 || p.getValue().intValue() >= 8) {
@@ -433,7 +433,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             }
             if ((!turn && c.isRed() || turn && c.isBlack()) && c.getActionCommand().equals("king")) {
                 return true;
-            } else if (!turn && c.isRed() && p.getKey().intValue() > c.i || turn && c.isBlack() && p.getKey().intValue() < c.i) {
+            } else if (!turn && c.isRed() && p.getKey().intValue() > c.position.getKey() || turn && c.isBlack() && p.getKey().intValue() < c.position.getKey()) {
                 // Regular red piece can only move up and regular black piece can only move down.
             } else if (!turn && c.isRed() || turn && c.isBlack()) {
                 return true;  // The move is legal.
@@ -442,21 +442,21 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         return false;
     }
 
-    private Pair<Integer, Integer>[] getSurroundingPositionsToMove(Checkers c) {
+    private Pair<Integer, Integer>[] getSurroundingPositionsToMove(Checker c) {
         Pair<Integer, Integer>[] positions = new Pair[4];
-        positions[0] = new Pair(c.i - 1, c.j - 1);
-        positions[1] = new Pair(c.i - 1, c.j + 1);
-        positions[2] = new Pair(c.i + 1, c.j + 1);
-        positions[3] = new Pair(c.i + 1, c.j - 1);
+        positions[0] = new Pair(c.position.getKey() - 1, c.position.getValue() - 1);
+        positions[1] = new Pair(c.position.getKey() - 1, c.position.getValue() + 1);
+        positions[2] = new Pair(c.position.getKey() + 1, c.position.getValue() + 1);
+        positions[3] = new Pair(c.position.getKey() + 1, c.position.getValue() - 1);
         return positions;
     }
 
-    private Pair<Integer, Integer>[] getSurroundingPositionsToJump(Checkers c) {
+    private Pair<Integer, Integer>[] getSurroundingPositionsToJump(Checker c) {
         Pair<Integer, Integer>[] positions = new Pair[4];
-        positions[0] = new Pair(c.i - 2, c.j - 2);
-        positions[1] = new Pair(c.i - 2, c.j + 2);
-        positions[2] = new Pair(c.i + 2, c.j + 2);
-        positions[3] = new Pair(c.i + 2, c.j - 2);
+        positions[0] = new Pair(c.position.getKey() - 2, c.position.getValue() - 2);
+        positions[1] = new Pair(c.position.getKey() - 2, c.position.getValue() + 2);
+        positions[2] = new Pair(c.position.getKey() + 2, c.position.getValue() + 2);
+        positions[3] = new Pair(c.position.getKey() + 2, c.position.getValue() - 2);
         return positions;
     }
 

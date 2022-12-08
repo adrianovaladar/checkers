@@ -1,13 +1,16 @@
+import javafx.util.Pair;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 
-public class Checkers extends JButton {
+public class Checker extends JButton {
 
-    int i, j;
+    Pair<Integer, Integer> position;
+
     Icon icon;
 
-    public void king_red() {
+    public void kingRed() {
         this.setActionCommand("king");
         this.setName("red");
         Image img;
@@ -21,7 +24,7 @@ public class Checkers extends JButton {
         }
     }
 
-    public void king_black() {
+    public void kingBlack() {
         this.setActionCommand("king");
         this.setName("black");
         Image img;
@@ -61,9 +64,8 @@ public class Checkers extends JButton {
         }
     }
 
-    public Checkers(int i, int j) {
-        this.i = i;
-        this.j = j;
+    public Checker(int i, int j) {
+        position = new Pair<>(i, j);
         this.setBackground(new Color(158, 76, 16));
 
         if (i < 3) {
@@ -77,7 +79,7 @@ public class Checkers extends JButton {
         }
     }
 
-    public Checkers() {
+    public Checker() {
 
     }
 
