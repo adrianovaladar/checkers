@@ -162,6 +162,15 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         return false;
     }
 
+    private void removeCheckerActions() {
+        for (int i = 0; i < BoardSquares.length; i++) {
+            for (int j = 0; j < BoardSquares.length; j++) {
+                if (!(i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1)) {
+                    BoardSquares[i][j].removeMouseListener(this);
+                }
+            }
+        }
+    }
 
     private void gameOver() {
         messages.append("Game over\n");
@@ -179,11 +188,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         this.giveUp.setEnabled(false);
         this.gameOver = true;
 
-        for (Checker[] boardSquare : BoardSquares) {
-            for (int j = 0; j < BoardSquares.length; j++) {
-                boardSquare[j].removeMouseListener(this);
-            }
-        }
+        removeCheckerActions();
     }
 
     private void jumpChecker(Checker c) {
@@ -362,12 +367,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 this.startGame.setEnabled(true);
                 this.giveUp.setEnabled(false);
                 this.gameOver = true;
-                for (Checker[] boardSquare : BoardSquares) {
-                    for (int j = 0; j < BoardSquares.length; j++) {
-                        boardSquare[j].removeMouseListener(this);
-
-                    }
-                }
+                removeCheckerActions();
             }
         }
     }
@@ -481,12 +481,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             this.gameOver = true;
             this.startGame.setEnabled(true);
             this.giveUp.setEnabled(false);
-            for (int i = 0; i < BoardSquares.length; i++) {
-                for (int j = 0; j < BoardSquares.length; j++) {
-                    BoardSquares[i][j].removeMouseListener(this);
-
-                }
-            }
+            removeCheckerActions();
             messages.append("Game over\n");
             if (turn == true) {
                 messages.append(players[0].getName() + " won\n");
