@@ -25,7 +25,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     Messages messages = new Messages();
     JButton startGame = new JButton();
     JButton giveUp = new JButton();
-    Wins score = new Wins(0, 0);
+    Score score = new Score(0, 0);
     boolean turn = false; // false for red, true for black
 
     JLabel playerTurn = new JLabel();
@@ -174,7 +174,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             players[0].increaseWins();
         }
         messages.append(name + " won\n");
-        score.changeWins(players[0].getWins(), players[1].getWins());
+        score.change(players[0].getWins(), players[1].getWins());
         this.startGame.setEnabled(true);
         this.giveUp.setEnabled(false);
         this.gameOver = true;
@@ -353,11 +353,11 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 if (turn) {
                     messages.append(players[bool2Int(!turn)].getName() + " won\n");
                     players[0].increaseWins();
-                    score.changeWins(players[0].getWins(), players[1].getWins());
+                    score.change(players[0].getWins(), players[1].getWins());
                 } else if (!turn) {
                     messages.append(players[bool2Int(!turn)].getName() + " won\n");
                     players[1].increaseWins();
-                    score.changeWins(players[0].getWins(), players[1].getWins());
+                    score.change(players[0].getWins(), players[1].getWins());
                 }
                 this.startGame.setEnabled(true);
                 this.giveUp.setEnabled(false);
@@ -491,11 +491,11 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             if (turn == true) {
                 messages.append(players[0].getName() + " won\n");
                 players[0].increaseWins();
-                score.changeWins(players[0].getWins(), players[1].getWins());
+                score.change(players[0].getWins(), players[1].getWins());
             } else if (turn == false) {
                 messages.append(players[0].getName() + " won\n");
                 players[1].increaseWins();
-                score.changeWins(players[0].getWins(), players[1].getWins());
+                score.change(players[0].getWins(), players[1].getWins());
             }
         }
 
