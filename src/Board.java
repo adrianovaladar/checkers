@@ -29,6 +29,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     boolean turn = false; // false for red, true for black
 
     JLabel playerTurn = new JLabel();
+    JMenuBar menuBar = new JMenuBar();
 
     private void changePlayerTurn() {
         turn = !turn;
@@ -43,11 +44,56 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             playerTurn.setForeground(new Color(0, 0, 0));
     }
 
+    private void setMenuBar() {
+        JMenu menu = new JMenu("Menu");
+        JMenuItem about = new JMenuItem("About");
+        about.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                JOptionPane.showMessageDialog(new JFrame(), "Game developed by Adriano Valadar");
+            }
+        });
+        JMenuItem redPlayerName = new JMenuItem("Change " + players[0].getName() + " name");
+        redPlayerName.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = JOptionPane.showInputDialog("Insert name:");
+                if (!name.equals(players[1].getName())) {
+                    String oldName = players[0].getName();
+                    players[0].setName(name);
+                    messages.append(oldName + " player changed name to " + name + "\n");
+                    showPlayerTurn();
+                    score.show(players[0].getWins(), players[1].getWins());
+                }
+            }
+        });
+        JMenuItem blackPlayerName = new JMenuItem("Change " + players[1].getName() + " name");
+        blackPlayerName.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String name = JOptionPane.showInputDialog("Insert name:");
+                if (!name.equals(players[0].getName())) {
+                    String oldName = players[1].getName();
+                    players[1].setName(name);
+                    messages.append(oldName + " player changed name to " + name + "\n");
+                    showPlayerTurn();
+                    score.show(players[0].getWins(), players[1].getWins());
+                }
+            }
+        });
+        menu.add(redPlayerName);
+        menu.add(blackPlayerName);
+        menu.add(about);
+        menuBar.add(menu);
+        this.setJMenuBar(menuBar);
+
+    }
+
     private void startGUI() {
 
         redCheckers = 12;
         blackCheckers = 12;
-        this.setTitle("Checkers Game - Adriano Valadar");
+        this.setTitle("Checkers Game");
         players[0] = new Player("Red");
         turn = false;
         players[1] = new Player("Black");
@@ -80,6 +126,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         eastPanel.setPreferredSize(new Dimension(370, 560));
         eastPanel.setMinimumSize(new Dimension(370, 560));
 
+        this.setMenuBar();
         this.setLayout(new BorderLayout());
         this.add(centerPanel, BorderLayout.CENTER);
         this.add(northPanel, BorderLayout.NORTH);
@@ -183,7 +230,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             players[0].increaseWins();
         }
         messages.append(name + " won\n");
-        score.change(players[0].getWins(), players[1].getWins());
+        score.show(players[0].getWins(), players[1].getWins());
         this.startGame.setEnabled(true);
         this.giveUp.setEnabled(false);
         this.gameOver = true;
@@ -358,11 +405,11 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 if (turn) {
                     messages.append(players[bool2Int(!turn)].getName() + " won\n");
                     players[0].increaseWins();
-                    score.change(players[0].getWins(), players[1].getWins());
+                    score.show(players[0].getWins(), players[1].getWins());
                 } else if (!turn) {
                     messages.append(players[bool2Int(!turn)].getName() + " won\n");
                     players[1].increaseWins();
-                    score.change(players[0].getWins(), players[1].getWins());
+                    score.show(players[0].getWins(), players[1].getWins());
                 }
                 this.startGame.setEnabled(true);
                 this.giveUp.setEnabled(false);
@@ -486,11 +533,11 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             if (turn == true) {
                 messages.append(players[0].getName() + " won\n");
                 players[0].increaseWins();
-                score.change(players[0].getWins(), players[1].getWins());
+                score.show(players[0].getWins(), players[1].getWins());
             } else if (turn == false) {
                 messages.append(players[0].getName() + " won\n");
                 players[1].increaseWins();
-                score.change(players[0].getWins(), players[1].getWins());
+                score.show(players[0].getWins(), players[1].getWins());
             }
         }
 

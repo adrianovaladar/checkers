@@ -8,7 +8,7 @@ public class Score extends JLabel {
         this.setForeground(new Color(0, 0, 0));
     }
 
-    public void change(int redWins, int blackWins) {
+    public void show(int redWins, int blackWins) {
         this.setText("Red " + redWins + " - " + blackWins + " Black");
     }
 }
