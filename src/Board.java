@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 
 public class Board extends JFrame implements MouseListener, ActionListener {
 
@@ -25,7 +26,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     Messages messages = new Messages();
     JButton startGame = new JButton();
     JButton giveUp = new JButton();
-    Score score = new Score(0, 0);
+    Score score = new Score();
     boolean turn = false; // false for red, true for black
 
     JLabel playerTurn = new JLabel();
@@ -56,7 +57,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 players[0].setName(name);
                 messages.append(oldName + " player changed name to " + name + "\n");
                 showPlayerTurn();
-                score.show(players[0].getWins(), players[1].getWins());
+                score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
             }
         });
         JMenuItem blackPlayerName = new JMenuItem("Change " + players[1].getName() + " name");
@@ -67,7 +68,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 players[1].setName(name);
                 messages.append(oldName + " player changed name to " + name + "\n");
                 showPlayerTurn();
-                score.show(players[0].getWins(), players[1].getWins());
+                score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
             }
         });
         menu.add(redPlayerName);
@@ -84,8 +85,9 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         blackCheckers = 12;
         this.setTitle("Checkers Game");
         players[0] = new Player("Red");
-        turn = false;
         players[1] = new Player("Black");
+        score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
+        turn = false;
         showPlayerTurn();
         centerPanel.setLayout(new GridLayout(9, 9));
         this.addBoard();
@@ -216,7 +218,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             players[0].increaseWins();
         }
         messages.append(name + " won\n");
-        score.show(players[0].getWins(), players[1].getWins());
+        score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
         this.startGame.setEnabled(true);
         this.giveUp.setEnabled(false);
         this.gameOver = true;
@@ -300,10 +302,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                     messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
                 changePlayerTurn();
-
-            } else if (!this.canJump && turn) {
+            } else if (!this.canJump) { //in this condition, we can consider that turn is true (black turn)
                 Toolkit.getDefaultToolkit().beep();
-
                 if (c.position.getKey() == 7) {
                     c.kingBlack();
                     messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
@@ -385,11 +385,11 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 if (turn) {
                     messages.append(players[bool2Int(!turn)].getName() + " won\n");
                     players[0].increaseWins();
-                    score.show(players[0].getWins(), players[1].getWins());
+                    score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
                 } else if (!turn) {
                     messages.append(players[bool2Int(!turn)].getName() + " won\n");
                     players[1].increaseWins();
-                    score.show(players[0].getWins(), players[1].getWins());
+                    score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
                 }
                 this.startGame.setEnabled(true);
                 this.giveUp.setEnabled(false);
@@ -400,7 +400,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void changeColourMove(Checker c) {
-        Pair<Integer, Integer>[] positions = getSurroundingPositionsToMove(c);
+        ArrayList<Pair<Integer, Integer>> positions = getSurroundingPositionsToMove(c);
         for (Pair<Integer, Integer> p : positions) {
             if (p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) {
                 continue;  // (r2,c2) is off the board.
@@ -449,7 +449,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private boolean canMove(Checker c) {
-        Pair<Integer, Integer>[] positions = getSurroundingPositionsToMove(c);
+        ArrayList<Pair<Integer, Integer>> positions = getSurroundingPositionsToMove(c);
         for (Pair<Integer, Integer> p : positions) {
             if (p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) {
                 continue;  // (r2,c2) is off the board.
@@ -458,8 +458,6 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             }
             if ((!turn && c.isRed() || turn && c.isBlack()) && c.getActionCommand().equals("king")) {
                 return true;
-            } else if (!turn && c.isRed() && p.getKey() > c.position.getKey() || turn && c.isBlack() && p.getKey() < c.position.getKey()) {
-                // Regular red piece can only move up and regular black piece can only move down.
             } else if (!turn && c.isRed() || turn && c.isBlack()) {
                 return true;  // The move is legal.
             }
@@ -467,12 +465,15 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         return false;
     }
 
-    private Pair<Integer, Integer>[] getSurroundingPositionsToMove(Checker c) {
-        Pair<Integer, Integer>[] positions = new Pair[4];
-        positions[0] = new Pair<>(c.position.getKey() - 1, c.position.getValue() - 1);
-        positions[1] = new Pair<>(c.position.getKey() - 1, c.position.getValue() + 1);
-        positions[2] = new Pair<>(c.position.getKey() + 1, c.position.getValue() + 1);
-        positions[3] = new Pair<>(c.position.getKey() + 1, c.position.getValue() - 1);
+    private ArrayList<Pair<Integer, Integer>> getSurroundingPositionsToMove(Checker c) {
+        ArrayList<Pair<Integer, Integer>> positions = new ArrayList<Pair<Integer, Integer>>();
+        if (c.isRed() || c.isKing()) {
+            positions.add(new Pair<>(c.position.getKey() - 1, c.position.getValue() - 1));
+            positions.add(new Pair<>(c.position.getKey() - 1, c.position.getValue() + 1));
+        } else if (c.isBlack() || c.isKing()) {
+            positions.add(new Pair<>(c.position.getKey() + 1, c.position.getValue() + 1));
+            positions.add(new Pair<>(c.position.getKey() + 1, c.position.getValue() - 1));
+        }
         return positions;
     }
 
@@ -504,7 +505,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             turn = false;
             showPlayerTurn();
 
-        } else if (this.gameOver == false) {
+        } else {
             this.gameOver = true;
             this.startGame.setEnabled(true);
             this.giveUp.setEnabled(false);
@@ -513,11 +514,11 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             if (turn == true) {
                 messages.append(players[0].getName() + " won\n");
                 players[0].increaseWins();
-                score.show(players[0].getWins(), players[1].getWins());
+                score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
             } else if (turn == false) {
                 messages.append(players[0].getName() + " won\n");
                 players[1].increaseWins();
-                score.show(players[0].getWins(), players[1].getWins());
+                score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
             }
         }
 

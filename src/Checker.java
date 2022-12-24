@@ -3,6 +3,7 @@ import javafx.util.Pair;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class Checker extends JButton {
 
@@ -16,11 +17,11 @@ public class Checker extends JButton {
         Image img;
 
         try {
-            img = ImageIO.read(getClass().getResource("resources/red_king.png"));
+            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("resources/red_king.png")));
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
         }
     }
 
@@ -30,11 +31,11 @@ public class Checker extends JButton {
         Image img;
 
         try {
-            img = ImageIO.read(getClass().getResource("resources/black_king.png"));
+            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("resources/black_king.png")));
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
         }
     }
 
@@ -43,11 +44,11 @@ public class Checker extends JButton {
         this.setName("red");
         Image img;
         try {
-            img = ImageIO.read(getClass().getResource("resources/red_man.png"));
+            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("resources/red_man.png")));
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
         }
     }
 
@@ -56,11 +57,11 @@ public class Checker extends JButton {
         this.setName("black");
         Image img;
         try {
-            img = ImageIO.read(getClass().getResource("resources/black_man.png"));
+            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("resources/black_man.png")));
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
-            System.out.println(ex);
+            ex.printStackTrace();
         }
     }
 
@@ -94,4 +95,9 @@ public class Checker extends JButton {
     public boolean isMan() {
         return this.getActionCommand().equals("man");
     }
+
+    public boolean isKing() {
+        return this.getActionCommand().equals("king");
+    }
+
 }
