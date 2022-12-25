@@ -52,24 +52,21 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         JMenuItem redPlayerName = new JMenuItem("Change " + players[0].getName() + " name");
         redPlayerName.addActionListener(e -> {
             String name = JOptionPane.showInputDialog("Insert name:");
-            if (!name.equals(players[1].getName())) {
-                String oldName = players[0].getName();
-                players[0].setName(name);
-                messages.append(oldName + " player changed name to " + name + "\n");
-                showPlayerTurn();
-                score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
-            }
+            String oldName = players[0].getName();
+            players[0].setName(name + " (Red)");
+            messages.append(oldName + " player changed name to " + name + "\n");
+            showPlayerTurn();
+            score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
         });
         JMenuItem blackPlayerName = new JMenuItem("Change " + players[1].getName() + " name");
         blackPlayerName.addActionListener(e -> {
             String name = JOptionPane.showInputDialog("Insert name:");
-            if (!name.equals(players[0].getName())) {
-                String oldName = players[1].getName();
-                players[1].setName(name);
-                messages.append(oldName + " player changed name to " + name + "\n");
-                showPlayerTurn();
-                score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
-            }
+            String oldName = players[1].getName();
+            players[1].setName(name + " (Black)");
+            messages.append(oldName + " player changed name to " + name + "\n");
+            showPlayerTurn();
+            score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
+
         });
         menu.add(redPlayerName);
         menu.add(blackPlayerName);
