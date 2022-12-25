@@ -379,7 +379,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             if (canMove(c)) {
                 changeColourMove(c);
             }
-        } else if (this.hasChecker(c) && !this.canJump && !this.canMove) { // refactor this code and include in isGameOver
+        } else if (this.hasChecker(c) && !this.canJump && !this.canMove) {
             if (!turn && c.isRed() || turn && c.isBlack()) {
                 gameOver();
             }
