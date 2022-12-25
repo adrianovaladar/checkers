@@ -381,20 +381,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             }
         } else if (this.hasChecker(c) && !this.canJump && !this.canMove) { // refactor this code and include in isGameOver
             if (!turn && c.isRed() || turn && c.isBlack()) {
-                messages.append("Game over\n");
-                if (turn) {
-                    messages.append(players[0].getName() + " won\n");
-                    players[0].increaseWins();
-                    score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
-                } else if (!turn) {
-                    messages.append(players[1].getName() + " won\n");
-                    players[1].increaseWins();
-                    score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
-                }
-                this.startGame.setEnabled(true);
-                this.giveUp.setEnabled(false);
-                this.gameOver = true;
-                removeCheckerActions();
+                gameOver();
             }
         }
     }
@@ -493,7 +480,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        if (this.gameOver == true) {
+        if (this.gameOver) {
             centerPanel.removeAll();
             addBoard();
             centerPanel.revalidate();
