@@ -23,7 +23,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     int redCheckers, blackCheckers;
     Pair<Integer, Integer> positionCurrentChecker;
     boolean canJump, canMove, gameOver;
-    Messages messages = new Messages();
+    Message message = new Message();
     JButton startGame = new JButton();
     JButton giveUp = new JButton();
     Score score = new Score();
@@ -54,7 +54,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             String name = JOptionPane.showInputDialog("Insert name:");
             String oldName = players[0].getName();
             players[0].setName(name + " (Red)");
-            messages.append(oldName + " player changed name to " + name + "\n");
+            message.append(oldName + " player changed name to " + name + "\n");
             showPlayerTurn();
             score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
         });
@@ -63,7 +63,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             String name = JOptionPane.showInputDialog("Insert name:");
             String oldName = players[1].getName();
             players[1].setName(name + " (Black)");
-            messages.append(oldName + " player changed name to " + name + "\n");
+            message.append(oldName + " player changed name to " + name + "\n");
             showPlayerTurn();
             score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
 
@@ -94,7 +94,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         southPanel.add(score);
         northPanel.add(playerTurn);
 
-        JScrollPane scroll = new JScrollPane(messages);
+        JScrollPane scroll = new JScrollPane(message);
         scroll.setPreferredSize(new Dimension(330, 400));
         scroll.setMinimumSize(new Dimension(330, 400));
         scroll.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
@@ -205,7 +205,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void gameOver() {
-        messages.append("Game over\n");
+        message.append("Game over\n");
         String name;
         if (redCheckers == 0 || !turn) {
             name = players[1].getName();
@@ -214,7 +214,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             name = players[0].getName();
             players[0].increaseWins();
         }
-        messages.append(name + " won\n");
+        message.append(name + " won\n");
         score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
         this.startGame.setEnabled(true);
         this.giveUp.setEnabled(false);
@@ -241,7 +241,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         boardSquares[c.position.getKey()][c.position.getValue()].setName(name);
         boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
         boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
-        messages.append(players[bool2Int(turn)].getName() + " piece on " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+        message.append(players[bool2Int(turn)].getName() + " piece on " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
         if (!turn) blackCheckers--;
         else redCheckers--;
         if (isGameOver()) {
@@ -258,7 +258,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand("");
         boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setIcon(null);
 
-        messages.append(players[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+        message.append(players[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
         boardSquares[c.position.getKey()][c.position.getValue()].setName(name);
         boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
         boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
@@ -296,14 +296,14 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 Toolkit.getDefaultToolkit().beep();
                 if (c.position.getKey() == 0) {
                     c.kingRed();
-                    messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+                    message.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
                 changePlayerTurn();
             } else if (!this.canJump) { //in this condition, we can consider that turn is true (black turn)
                 Toolkit.getDefaultToolkit().beep();
                 if (c.position.getKey() == 7) {
                     c.kingBlack();
-                    messages.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+                    message.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
                 changePlayerTurn();
             }
@@ -480,7 +480,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             this.startGame.setEnabled(false);
             this.giveUp.setEnabled(true);
             this.gameOver = false;
-            messages.append("Game started. Select a checker to view the options\n");
+            message.append("Game started. Select a checker to view the options\n");
             turn = false;
             showPlayerTurn();
 
