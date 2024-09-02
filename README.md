@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a player vs. player checkers game developed in Java 19 using JavaFX. The game features a user-friendly interface that allows two players to enjoy a classic game of checkers.
+This project is a player vs. player checkers game developed in Java 19. The game features a user-friendly interface that allows two players to enjoy a classic game of checkers.
 
 ## Features
 
@@ -50,9 +50,8 @@ This project is a player vs. player checkers game developed in Java 19 using Jav
 
 ## Installation
 
-1. **JavaFX Requirement**: Ensure you have JavaFX installed on your system;
-2. **Download the Game**: Clone or download the repository containing the game files;
-3. **Run the Game**: Use your preferred Java IDE or command line to compile and run the game.
+1. **Download the Game**: Clone or download the repository containing the game files;
+2. **Run the Game**: Use your preferred Java IDE or command line to compile and run the game.
 
 ## Creators
 

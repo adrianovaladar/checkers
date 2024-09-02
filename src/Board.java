@@ -1,5 +1,3 @@
-import javafx.util.Pair;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -7,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.AbstractMap.SimpleEntry;
 
 public class Board extends JFrame implements MouseListener, ActionListener {
 
@@ -21,7 +20,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     JLabel[] characters = new JLabel[8];
     Player[] players = new Player[2];
     int redCheckers, blackCheckers;
-    Pair<Integer, Integer> positionCurrentChecker;
+    SimpleEntry<Integer, Integer> positionCurrentChecker;
     boolean canJump, canMove, gameOver;
     Message message = new Message();
     JButton startGame = new JButton();
@@ -384,8 +383,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void changeColourMove(Checker c) {
-        ArrayList<Pair<Integer, Integer>> positions = getSurroundingPositionsToMove(c);
-        for (Pair<Integer, Integer> p : positions) {
+        ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositionsToMove(c);
+        for (SimpleEntry<Integer, Integer> p : positions) {
             if (p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) {
                 continue;  // (r2,c2) is off the board.
             } else if (!boardSquares[p.getKey()][p.getValue()].getName().equals("")) {
@@ -400,8 +399,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void changeColourJump(Checker c) {
-        ArrayList<Pair<Integer, Integer>> positions = getSurroundingPositionsToJump(c);
-        for (Pair<Integer, Integer> p : positions) {
+        ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositionsToJump(c);
+        for (SimpleEntry<Integer, Integer> p : positions) {
             if ((p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) || !boardSquares[p.getKey()][p.getValue()].getName().equals("")) {
                 // first condition: p is off the board, second condition: p already contains a piece.
             } else if ((!turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed())) {
@@ -411,8 +410,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private boolean canJump(Checker c) {
-        ArrayList<Pair<Integer, Integer>> positionsJump = getSurroundingPositionsToJump(c);
-        for (Pair<Integer, Integer> p : positionsJump) {
+        ArrayList<SimpleEntry<Integer, Integer>> positionsJump = getSurroundingPositionsToJump(c);
+        for (SimpleEntry<Integer, Integer> p : positionsJump) {
             if ((p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) || (!boardSquares[p.getKey()][p.getValue()].getName().equals(""))) {
                 // first condition: p is off the board, second condition: p already contains a piece.
             } else if ((!turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed())) {
@@ -423,8 +422,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private boolean canMove(Checker c) {
-        ArrayList<Pair<Integer, Integer>> positions = getSurroundingPositionsToMove(c);
-        for (Pair<Integer, Integer> p : positions) {
+        ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositionsToMove(c);
+        for (SimpleEntry<Integer, Integer> p : positions) {
             if (p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) {
                 continue;  // (r2,c2) is off the board.
             } else if (!boardSquares[p.getKey()][p.getValue()].getName().equals("")) {
@@ -439,28 +438,28 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         return false;
     }
 
-    private ArrayList<Pair<Integer, Integer>> getSurroundingPositionsToMove(Checker c) {
-        ArrayList<Pair<Integer, Integer>> positions = new ArrayList<>();
+    private ArrayList<SimpleEntry<Integer, Integer>> getSurroundingPositionsToMove(Checker c) {
+        ArrayList<SimpleEntry<Integer, Integer>> positions = new ArrayList<>();
         if (c.isRed() || c.isKing()) {
-            positions.add(new Pair<>(c.position.getKey() - 1, c.position.getValue() - 1));
-            positions.add(new Pair<>(c.position.getKey() - 1, c.position.getValue() + 1));
+            positions.add(new SimpleEntry<>(c.position.getKey() - 1, c.position.getValue() - 1));
+            positions.add(new SimpleEntry<>(c.position.getKey() - 1, c.position.getValue() + 1));
         }
         if (c.isBlack() || c.isKing()) {
-            positions.add(new Pair<>(c.position.getKey() + 1, c.position.getValue() + 1));
-            positions.add(new Pair<>(c.position.getKey() + 1, c.position.getValue() - 1));
+            positions.add(new SimpleEntry<>(c.position.getKey() + 1, c.position.getValue() + 1));
+            positions.add(new SimpleEntry<>(c.position.getKey() + 1, c.position.getValue() - 1));
         }
         return positions;
     }
 
-    private ArrayList<Pair<Integer, Integer>> getSurroundingPositionsToJump(Checker c) {
-        ArrayList<Pair<Integer, Integer>> positions = new ArrayList<>();
+    private ArrayList<SimpleEntry<Integer, Integer>> getSurroundingPositionsToJump(Checker c) {
+        ArrayList<SimpleEntry<Integer, Integer>> positions = new ArrayList<>();
         if (c.isRed() || c.isKing()) {
-            positions.add(new Pair<>(c.position.getKey() - 2, c.position.getValue() - 2));
-            positions.add(new Pair<>(c.position.getKey() - 2, c.position.getValue() + 2));
+            positions.add(new SimpleEntry<>(c.position.getKey() - 2, c.position.getValue() - 2));
+            positions.add(new SimpleEntry<>(c.position.getKey() - 2, c.position.getValue() + 2));
         }
         if (c.isBlack() || c.isKing()) {
-            positions.add(new Pair<>(c.position.getKey() + 2, c.position.getValue() + 2));
-            positions.add(new Pair<>(c.position.getKey() + 2, c.position.getValue() - 2));
+            positions.add(new SimpleEntry<>(c.position.getKey() + 2, c.position.getValue() + 2));
+            positions.add(new SimpleEntry<>(c.position.getKey() + 2, c.position.getValue() - 2));
         }
         return positions;
     }

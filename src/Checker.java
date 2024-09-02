@@ -1,4 +1,4 @@
-import javafx.util.Pair;
+import java.util.AbstractMap.SimpleEntry;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -7,7 +7,7 @@ import java.util.Objects;
 
 public class Checker extends JButton {
 
-    Pair<Integer, Integer> position;
+    SimpleEntry<Integer, Integer> position;
 
     Icon icon;
 
@@ -66,7 +66,7 @@ public class Checker extends JButton {
     }
 
     public Checker(int i, int j) {
-        position = new Pair<>(i, j);
+        position = new SimpleEntry<>(i, j);
         this.setBackground(new Color(158, 76, 16));
 
         if (i < 3) {
