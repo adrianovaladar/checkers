@@ -6,14 +6,18 @@ import java.awt.*;
 import java.util.Objects;
 
 public class Checker extends JButton {
+    private static final String BLACK = "black";
+    private static final String RED = "red";
+    private static final String MAN = "man";
+    private static final String KING = "king";
 
     SimpleEntry<Integer, Integer> position;
 
     Icon icon;
 
     public void kingRed() {
-        this.setActionCommand("king");
-        this.setName("red");
+        this.setActionCommand(KING);
+        this.setName(RED);
         Image img;
 
         try {
@@ -26,8 +30,8 @@ public class Checker extends JButton {
     }
 
     public void kingBlack() {
-        this.setActionCommand("king");
-        this.setName("black");
+        this.setActionCommand(KING);
+        this.setName(BLACK);
         Image img;
 
         try {
@@ -40,8 +44,8 @@ public class Checker extends JButton {
     }
 
     public void redMan() {
-        this.setActionCommand("man");
-        this.setName("red");
+        this.setActionCommand(MAN);
+        this.setName(RED);
         Image img;
         try {
             img = ImageIO.read(Objects.requireNonNull(getClass().getResource("resources/red_man.png")));
@@ -53,8 +57,8 @@ public class Checker extends JButton {
     }
 
     public void blackMan() {
-        this.setActionCommand("man");
-        this.setName("black");
+        this.setActionCommand(MAN);
+        this.setName(BLACK);
         Image img;
         try {
             img = ImageIO.read(Objects.requireNonNull(getClass().getResource("resources/black_man.png")));
@@ -85,19 +89,19 @@ public class Checker extends JButton {
     }
 
     public boolean isRed() {
-        return this.getName().equals("red");
+        return this.getName().equals(RED);
     }
 
     public boolean isBlack() {
-        return this.getName().equals("black");
+        return this.getName().equals(BLACK);
     }
 
     public boolean isMan() {
-        return this.getActionCommand().equals("man");
+        return this.getActionCommand().equals(MAN);
     }
 
     public boolean isKing() {
-        return this.getActionCommand().equals("king");
+        return this.getActionCommand().equals(KING);
     }
 
 }
