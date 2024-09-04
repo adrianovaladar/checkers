@@ -1,5 +1,6 @@
-import java.util.AbstractMap.SimpleEntry;
+package checkers;
 
+import java.util.AbstractMap.SimpleEntry;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -21,7 +22,7 @@ public class Checker extends JButton {
         Image img;
 
         try {
-            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("resources/red_king.png")));
+            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("/red_king.png")));
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
@@ -35,7 +36,7 @@ public class Checker extends JButton {
         Image img;
 
         try {
-            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("resources/black_king.png")));
+            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("/black_king.png")));
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
@@ -48,7 +49,7 @@ public class Checker extends JButton {
         this.setName(RED);
         Image img;
         try {
-            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("resources/red_man.png")));
+            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("/red_man.png")));
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
@@ -61,7 +62,7 @@ public class Checker extends JButton {
         this.setName(BLACK);
         Image img;
         try {
-            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("resources/black_man.png")));
+            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("/black_man.png")));
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {

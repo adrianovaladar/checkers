@@ -1,3 +1,5 @@
+package checkers;
+
 import javax.swing.*;
 
 public class Message extends JTextArea {

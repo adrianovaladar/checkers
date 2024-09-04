@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is a player vs. player checkers game developed in Java 19. The game features a user-friendly interface that allows two players to enjoy a classic game of checkers.
+This project is a player vs. player checkers game developed in Java 21. The game features a user-friendly interface that allows two players to enjoy a classic game of checkers.
 
 ## Features
 
