@@ -14,7 +14,7 @@ public class Checker extends JButton {
 
     SimpleEntry<Integer, Integer> position;
 
-    Icon icon;
+    transient Icon icon;
 
     public void kingRed() {
         this.setActionCommand(KING);
