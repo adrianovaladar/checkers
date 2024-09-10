@@ -5,6 +5,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Checker extends JButton {
     private static final String BLACK = "black";
@@ -13,8 +15,8 @@ public class Checker extends JButton {
     private static final String KING = "king";
 
     SimpleEntry<Integer, Integer> position;
-
     transient Icon icon;
+    transient Logger logger = Logger.getLogger(getClass().getName());
 
     public void kingRed() {
         this.setActionCommand(KING);
@@ -26,7 +28,7 @@ public class Checker extends JButton {
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to load red king image", ex);
         }
     }
 
@@ -40,7 +42,7 @@ public class Checker extends JButton {
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to load black king image", ex);
         }
     }
 
@@ -49,11 +51,11 @@ public class Checker extends JButton {
         this.setName(RED);
         Image img;
         try {
-            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("/red_man.png")));
+            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("/red_an.png")));
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to load red man image", ex);
         }
     }
 
@@ -66,7 +68,7 @@ public class Checker extends JButton {
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logger.log(Level.SEVERE, "Failed to load black man image", ex);
         }
     }
 
