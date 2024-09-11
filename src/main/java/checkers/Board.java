@@ -188,7 +188,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private boolean hasChecker(Checker c) {
-        return !c.getName().equals("");
+        return !c.getName().equals(Checker.PieceType.NONE.name());
     }
 
     private boolean isGameOver() {
@@ -229,16 +229,16 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         int jumpedCheckerColumn;
         jumpedCheckerRow = (positionCurrentChecker.getKey() + c.position.getKey()) / 2;
         jumpedCheckerColumn = (positionCurrentChecker.getValue() + c.position.getValue()) / 2;
-        boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setName("");
-        boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setActionCommand("");
+        boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setName(Checker.PieceColour.NONE.name());
+        boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setActionCommand(Checker.PieceType.NONE.name());
         boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setIcon(null);
 
         String name = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getName();
         String action = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getActionCommand();
         Icon icon = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getIcon();
-        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand("");
+        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand(Checker.PieceType.NONE.name());
         boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setIcon(null);
-        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setName("");
+        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setName(Checker.PieceColour.NONE.name());
         boardSquares[c.position.getKey()][c.position.getValue()].setName(name);
         boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
         boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
@@ -255,8 +255,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         String action = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getActionCommand();
         Icon icon = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getIcon();
 
-        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setName("");
-        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand("");
+        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setName(Checker.PieceColour.NONE.name());
+        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand(Checker.PieceType.NONE.name());
         boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setIcon(null);
 
         message.append(players[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
@@ -389,10 +389,10 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         for (SimpleEntry<Integer, Integer> p : positions) {
             if (p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) {
                 continue;  // (r2,c2) is off the board.
-            } else if (!boardSquares[p.getKey()][p.getValue()].getName().equals("")) {
+            } else if (!boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name())) {
                 continue;  // (r2,c2) already contains a piece.
             }
-            if ((!turn && c.isRed() || turn && c.isBlack()) && c.getActionCommand().equals("king")) {
+            if ((!turn && c.isRed() || turn && c.isBlack()) && c.isKing()) {
                 boardSquares[p.getKey()][p.getValue()].setBackground(new Color(255, 255, 0));
             } else if (!turn && c.isRed() || turn && c.isBlack()) {
                 boardSquares[p.getKey()][p.getValue()].setBackground(new Color(255, 255, 0));
@@ -403,7 +403,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     private void changeColourJump(Checker c) {
         ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositionsToJump(c);
         for (SimpleEntry<Integer, Integer> p : positions) {
-            if ((p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) || !boardSquares[p.getKey()][p.getValue()].getName().equals("")) {
+            if ((p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) || !boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name())) {
                 // first condition: p is off the board, second condition: p already contains a piece.
             } else if ((!turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed())) {
                 boardSquares[p.getKey()][p.getValue()].setBackground(new Color(255, 0, 0)); // Red turn: There is a black piece to jump. Black turn: There is a red piece to jump.
@@ -414,7 +414,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     private boolean canJump(Checker c) {
         ArrayList<SimpleEntry<Integer, Integer>> positionsJump = getSurroundingPositionsToJump(c);
         for (SimpleEntry<Integer, Integer> p : positionsJump) {
-            if ((p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) || (!boardSquares[p.getKey()][p.getValue()].getName().equals(""))) {
+            if ((p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) || (!boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name()))) {
                 // first condition: p is off the board, second condition: p already contains a piece.
             } else if ((!turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed())) {
                 return true; // Red turn: There is a black piece to jump. Black turn: There is a red piece to jump.
@@ -428,10 +428,10 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         for (SimpleEntry<Integer, Integer> p : positions) {
             if (p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) {
                 continue;  // (r2,c2) is off the board.
-            } else if (!boardSquares[p.getKey()][p.getValue()].getName().equals("")) {
+            } else if (!boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name())) {
                 continue;  // (r2,c2) already contains a piece.
             }
-            if ((!turn && c.isRed() || turn && c.isBlack()) && c.getActionCommand().equals("king")) {
+            if ((!turn && c.isRed() || turn && c.isBlack()) && c.isKing()) {
                 return true;
             } else if (!turn && c.isRed() || turn && c.isBlack()) {
                 return true;  // The move is legal.

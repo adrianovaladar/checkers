@@ -9,80 +9,54 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Checker extends JButton {
-    private static final String BLACK = "black";
-    private static final String RED = "red";
-    private static final String MAN = "man";
-    private static final String KING = "king";
+    public enum PieceType {MAN, KING, NONE}
 
+    public enum PieceColour {RED, BLACK, NONE}
     SimpleEntry<Integer, Integer> position;
     transient Icon icon;
     transient Logger logger = Logger.getLogger(getClass().getName());
+    private static final int BLACK_SETUP_END_ROW = 3;
+    private static final int RED_SETUP_START_ROW = 4;
 
-    public void kingRed() {
-        this.setActionCommand(KING);
-        this.setName(RED);
-        Image img;
-
+    private void setCheckerAttributes(PieceType type, PieceColour colour, String imagePath) {
+        this.setActionCommand(type.name());
+        this.setName(colour.name());
         try {
-            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("/red_king.png")));
+            Image img = ImageIO.read(Objects.requireNonNull(getClass().getResource(imagePath)));
             icon = new ImageIcon(img);
             this.setIcon(icon);
         } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Failed to load red king image", ex);
+            logger.log(Level.SEVERE, ex, () -> "Failed to load image: " + imagePath);
         }
+    }
+
+    public void kingRed() {
+        setCheckerAttributes(PieceType.KING, PieceColour.RED, "/red_king.png");
     }
 
     public void kingBlack() {
-        this.setActionCommand(KING);
-        this.setName(BLACK);
-        Image img;
-
-        try {
-            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("/black_king.png")));
-            icon = new ImageIcon(img);
-            this.setIcon(icon);
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Failed to load black king image", ex);
-        }
+        setCheckerAttributes(PieceType.KING, PieceColour.BLACK, "/black_king.png");
     }
 
     public void redMan() {
-        this.setActionCommand(MAN);
-        this.setName(RED);
-        Image img;
-        try {
-            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("/red_an.png")));
-            icon = new ImageIcon(img);
-            this.setIcon(icon);
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Failed to load red man image", ex);
-        }
+        setCheckerAttributes(PieceType.MAN, PieceColour.RED, "/red_man.png");
     }
 
     public void blackMan() {
-        this.setActionCommand(MAN);
-        this.setName(BLACK);
-        Image img;
-        try {
-            img = ImageIO.read(Objects.requireNonNull(getClass().getResource("/black_man.png")));
-            icon = new ImageIcon(img);
-            this.setIcon(icon);
-        } catch (Exception ex) {
-            logger.log(Level.SEVERE, "Failed to load black man image", ex);
-        }
+        setCheckerAttributes(PieceType.MAN, PieceColour.BLACK, "/black_man.png");
     }
 
     public Checker(int i, int j) {
         position = new SimpleEntry<>(i, j);
         this.setBackground(new Color(158, 76, 16));
 
-        if (i < 3) {
+        if (i < BLACK_SETUP_END_ROW) {
             blackMan();
-        } else if (i > 4) {
+        } else if (i > RED_SETUP_START_ROW) {
             redMan();
         } else {
-            this.setActionCommand("");
-            this.setName("");
+            this.setActionCommand(PieceType.NONE.name());
+            this.setName(PieceColour.NONE.name());
             this.setIcon(null);
         }
     }
@@ -92,19 +66,18 @@ public class Checker extends JButton {
     }
 
     public boolean isRed() {
-        return this.getName().equals(RED);
+        return PieceColour.RED.name().equals(this.getName());
     }
 
     public boolean isBlack() {
-        return this.getName().equals(BLACK);
+        return PieceColour.BLACK.name().equals(this.getName());
     }
 
     public boolean isMan() {
-        return this.getActionCommand().equals(MAN);
+        return PieceType.MAN.name().equals(this.getActionCommand());
     }
 
     public boolean isKing() {
-        return this.getActionCommand().equals(KING);
+        return PieceType.KING.name().equals(this.getActionCommand());
     }
-
 }
