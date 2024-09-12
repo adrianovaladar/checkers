@@ -377,10 +377,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             if (canMove(c)) {
                 changeColourMove(c);
             }
-        } else if (this.hasChecker(c) && !this.canJump && !this.canMove) {
-            if (!turn && c.isRed() || turn && c.isBlack()) {
+        } else if (this.hasChecker(c) && !this.canJump && !this.canMove && (!turn && c.isRed() || turn && c.isBlack())) {
                 gameOver();
-            }
         }
     }
 
@@ -426,15 +424,13 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     private boolean canMove(Checker c) {
         ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositionsToMove(c);
         for (SimpleEntry<Integer, Integer> p : positions) {
-            if (p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) {
-                continue;  // (r2,c2) is off the board.
-            } else if (!boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name())) {
-                continue;  // (r2,c2) already contains a piece.
+            boolean positionOffBoard = p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8;
+            boolean positionContainPiece = !boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name());
+            if (positionOffBoard || positionContainPiece) {
+                continue;
             }
-            if ((!turn && c.isRed() || turn && c.isBlack()) && c.isKing()) {
+            if ((!turn && c.isRed() || turn && c.isBlack())) {
                 return true;
-            } else if (!turn && c.isRed() || turn && c.isBlack()) {
-                return true;  // The move is legal.
             }
         }
         return false;
@@ -450,6 +446,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             positions.add(new SimpleEntry<>(c.position.getKey() + 1, c.position.getValue() + 1));
             positions.add(new SimpleEntry<>(c.position.getKey() + 1, c.position.getValue() - 1));
         }
+        positions.removeIf(position -> position.getKey() < 0 || position.getValue() < 0 || position.getValue() >= boardSquares.length || position.getKey() >= boardSquares.length);
         return positions;
     }
 
