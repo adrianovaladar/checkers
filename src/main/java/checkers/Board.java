@@ -424,7 +424,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     private boolean canMove(Checker c) {
         ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositionsToMove(c);
         for (SimpleEntry<Integer, Integer> p : positions) {
-            boolean positionOffBoard = p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8;
+            boolean positionOffBoard = p.getKey() < 0 || p.getKey() >= boardSquares.length || p.getValue() < 0 || p.getValue() >= boardSquares.length;
             boolean positionContainPiece = !boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name());
             if (positionOffBoard || positionContainPiece) {
                 continue;
