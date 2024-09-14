@@ -385,14 +385,8 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     private void changeColourMove(Checker c) {
         ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositionsToMove(c);
         for (SimpleEntry<Integer, Integer> p : positions) {
-            if (p.getKey() < 0 || p.getKey() >= 8 || p.getValue() < 0 || p.getValue() >= 8) {
-                continue;  // (r2,c2) is off the board.
-            } else if (!boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name())) {
-                continue;  // (r2,c2) already contains a piece.
-            }
-            if ((!turn && c.isRed() || turn && c.isBlack()) && c.isKing()) {
-                boardSquares[p.getKey()][p.getValue()].setBackground(new Color(255, 255, 0));
-            } else if (!turn && c.isRed() || turn && c.isBlack()) {
+            if (isPositionInvalid(p)) continue;
+            if ((!turn && c.isRed() || turn && c.isBlack())) {
                 boardSquares[p.getKey()][p.getValue()].setBackground(new Color(255, 255, 0));
             }
         }
@@ -424,16 +418,18 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     private boolean canMove(Checker c) {
         ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositionsToMove(c);
         for (SimpleEntry<Integer, Integer> p : positions) {
-            boolean positionOffBoard = p.getKey() < 0 || p.getKey() >= boardSquares.length || p.getValue() < 0 || p.getValue() >= boardSquares.length;
-            boolean positionContainPiece = !boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name());
-            if (positionOffBoard || positionContainPiece) {
-                continue;
-            }
+            if (isPositionInvalid(p)) continue;
             if ((!turn && c.isRed() || turn && c.isBlack())) {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean isPositionInvalid(SimpleEntry<Integer, Integer> p) {
+        boolean positionOffBoard = p.getKey() < 0 || p.getKey() >= boardSquares.length || p.getValue() < 0 || p.getValue() >= boardSquares.length;
+        boolean positionContainPiece = !boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name());
+        return positionOffBoard || positionContainPiece;
     }
 
     private ArrayList<SimpleEntry<Integer, Integer>> getSurroundingPositionsToMove(Checker c) {
