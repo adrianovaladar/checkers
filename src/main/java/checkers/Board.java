@@ -33,7 +33,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     JLabel playerTurn = new JLabel();
     JMenuBar menuBar = new JMenuBar();
 
-    enum Move {NONE, MOVE, JUMP}
+    enum MoveType {NONE, MOVE, JUMP}
 
     private void changePlayerTurn() {
         turn = !turn;
@@ -287,7 +287,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             this.canJump = false;
 
             if (!turn && c.isRed() || turn && c.isBlack()) {
-                if (canJump(c)) {
+                if (canPerformAction(c, MoveType.JUMP)) {
                     this.canJump = true;
                     positionCurrentChecker = c.position;
                     boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setBackground(new Color(0, 153, 0));
@@ -354,10 +354,10 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             for (int col = 0; col < boardSquares.length; col++) {
                 if (!((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1))) {
                     if (!turn && boardSquares[row][col].isRed() || turn && boardSquares[row][col].isBlack()) {
-                        if (canMove(boardSquares[row][col])) {
+                        if (canPerformAction(boardSquares[row][col], MoveType.MOVE)) {
                             this.canMove = true;
                         }
-                        if (canJump(boardSquares[row][col])) {
+                        if (canPerformAction(boardSquares[row][col], MoveType.JUMP)) {
                             this.canJump = true;
                         }
                     }
@@ -368,7 +368,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         if (this.hasChecker(c) && this.canJump) {
             boardSquares[c.position.getKey()][c.position.getValue()].setBackground(new Color(0, 153, 0));
             if (!turn && c.isRed() || turn && c.isBlack()) {
-                if (canJump(c)) {
+                if (canPerformAction(c, MoveType.JUMP)) {
                     this.canJump = true;
                     changeColourJump(c);
                 }
@@ -376,7 +376,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         } else if (this.hasChecker(c) && !this.canJump && this.canMove) {
             boardSquares[c.position.getKey()][c.position.getValue()].setBackground(new Color(0, 153, 0));
             positionCurrentChecker = c.position;
-            if (canMove(c)) {
+            if (canPerformAction(c, MoveType.MOVE)) {
                 changeColourMove(c);
             }
         } else if (this.hasChecker(c) && !this.canJump && !this.canMove && (!turn && c.isRed() || turn && c.isBlack())) {
@@ -385,7 +385,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void changeColourMove(Checker c) {
-        ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositions(c, Move.MOVE);
+        ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositions(c, MoveType.MOVE);
         for (SimpleEntry<Integer, Integer> p : positions) {
             if (isPositionInvalid(p)) continue;
             if ((!turn && c.isRed() || turn && c.isBlack())) {
@@ -395,7 +395,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void changeColourJump(Checker c) {
-        ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositions(c, Move.JUMP);
+        ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositions(c, MoveType.JUMP);
         for (SimpleEntry<Integer, Integer> p : positions) {
             if (isPositionInvalid(p)) continue;
             if ((!turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed())) {
@@ -404,26 +404,21 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
     }
 
-    private boolean canJump(Checker c) {
-        ArrayList<SimpleEntry<Integer, Integer>> positionsJump = getSurroundingPositions(c, Move.JUMP);
+    private boolean canPerformAction(Checker c, MoveType m) {
+        ArrayList<SimpleEntry<Integer, Integer>> positionsJump = getSurroundingPositions(c, m);
         for (SimpleEntry<Integer, Integer> p : positionsJump) {
             if (isPositionInvalid(p)) continue;
-            if ((!turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed())) {
-                return true; // Red turn: There is a black piece to jump. Black turn: There is a red piece to jump.
-            }
+            if (m == MoveType.MOVE && isValidMove(c) || m == MoveType.JUMP && isValidJump(c, p)) return true;
         }
         return false;
     }
 
-    private boolean canMove(Checker c) {
-        ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositions(c, Move.MOVE);
-        for (SimpleEntry<Integer, Integer> p : positions) {
-            if (isPositionInvalid(p)) continue;
-            if ((!turn && c.isRed() || turn && c.isBlack())) {
-                return true;
-            }
-        }
-        return false;
+    private boolean isValidJump(Checker c, SimpleEntry<Integer, Integer> p) {
+        return (!turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed());
+    }
+
+    private boolean isValidMove(Checker c) {
+        return !turn && c.isRed() || turn && c.isBlack();
     }
 
     private boolean isPositionInvalid(SimpleEntry<Integer, Integer> p) {
@@ -432,15 +427,15 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         return positionOffBoard || positionContainPiece;
     }
 
-    private ArrayList<SimpleEntry<Integer, Integer>> getSurroundingPositions(Checker c, Move move) {
+    private ArrayList<SimpleEntry<Integer, Integer>> getSurroundingPositions(Checker c, MoveType moveType) {
         ArrayList<SimpleEntry<Integer, Integer>> positions = new ArrayList<>();
         if (c.isRed() || c.isKing()) {
-            positions.add(new SimpleEntry<>(c.position.getKey() - move.ordinal(), c.position.getValue() - move.ordinal()));
-            positions.add(new SimpleEntry<>(c.position.getKey() - move.ordinal(), c.position.getValue() + move.ordinal()));
+            positions.add(new SimpleEntry<>(c.position.getKey() - moveType.ordinal(), c.position.getValue() - moveType.ordinal()));
+            positions.add(new SimpleEntry<>(c.position.getKey() - moveType.ordinal(), c.position.getValue() + moveType.ordinal()));
         }
         if (c.isBlack() || c.isKing()) {
-            positions.add(new SimpleEntry<>(c.position.getKey() + move.ordinal(), c.position.getValue() + move.ordinal()));
-            positions.add(new SimpleEntry<>(c.position.getKey() + move.ordinal(), c.position.getValue() - move.ordinal()));
+            positions.add(new SimpleEntry<>(c.position.getKey() + moveType.ordinal(), c.position.getValue() + moveType.ordinal()));
+            positions.add(new SimpleEntry<>(c.position.getKey() + moveType.ordinal(), c.position.getValue() - moveType.ordinal()));
         }
         positions.removeIf(position -> position.getKey() < 0 || position.getValue() < 0 || position.getValue() >= boardSquares.length || position.getKey() >= boardSquares.length);
         return positions;
