@@ -291,7 +291,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                     this.canJump = true;
                     positionCurrentChecker = c.position;
                     boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setBackground(new Color(0, 153, 0));
-                    changeColourJump(c);
+                    changeColour(c, MoveType.JUMP);
                 }
             }
 
@@ -370,36 +370,32 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             if (!turn && c.isRed() || turn && c.isBlack()) {
                 if (canPerformAction(c, MoveType.JUMP)) {
                     this.canJump = true;
-                    changeColourJump(c);
+                    changeColour(c, MoveType.JUMP);
                 }
             }
         } else if (this.hasChecker(c) && !this.canJump && this.canMove) {
             boardSquares[c.position.getKey()][c.position.getValue()].setBackground(new Color(0, 153, 0));
             positionCurrentChecker = c.position;
             if (canPerformAction(c, MoveType.MOVE)) {
-                changeColourMove(c);
+                changeColour(c, MoveType.MOVE);
             }
         } else if (this.hasChecker(c) && !this.canJump && !this.canMove && (!turn && c.isRed() || turn && c.isBlack())) {
                 gameOver();
         }
     }
 
-    private void changeColourMove(Checker c) {
-        ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositions(c, MoveType.MOVE);
-        for (SimpleEntry<Integer, Integer> p : positions) {
-            if (isPositionInvalid(p)) continue;
-            if ((!turn && c.isRed() || turn && c.isBlack())) {
-                boardSquares[p.getKey()][p.getValue()].setBackground(new Color(255, 255, 0));
-            }
-        }
+    private void setBoardSquareColor(SimpleEntry<Integer, Integer> position, Color color) {
+        boardSquares[position.getKey()][position.getValue()].setBackground(color);
     }
 
-    private void changeColourJump(Checker c) {
-        ArrayList<SimpleEntry<Integer, Integer>> positions = getSurroundingPositions(c, MoveType.JUMP);
-        for (SimpleEntry<Integer, Integer> p : positions) {
+    private void changeColour(Checker c, MoveType m) {
+        ArrayList<SimpleEntry<Integer, Integer>> positionsJump = getSurroundingPositions(c, m);
+        for (SimpleEntry<Integer, Integer> p : positionsJump) {
             if (isPositionInvalid(p)) continue;
-            if ((!turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed())) {
-                boardSquares[p.getKey()][p.getValue()].setBackground(new Color(255, 0, 0)); // Red turn: There is a black piece to jump. Black turn: There is a red piece to jump.
+            if (m == MoveType.JUMP && isValidJump(c, p)) {
+                setBoardSquareColor(p, new Color(255, 0, 0));
+            } else if (m == MoveType.MOVE && isValidMove(c)) {
+                setBoardSquareColor(p, new Color(255, 255, 0));
             }
         }
     }
