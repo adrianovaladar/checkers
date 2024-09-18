@@ -10,16 +10,16 @@ import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
 
 public class Board extends JFrame implements MouseListener, ActionListener {
-
-    Checker[][] boardSquares = new Checker[8][8];
+    private static final int BOARD_SIZE = 8;
+    Checker[][] boardSquares = new Checker[BOARD_SIZE][BOARD_SIZE];
 
     JPanel centerPanel = new JPanel();
     JPanel northPanel = new JPanel();
     JPanel eastPanel = new JPanel();
     JPanel southPanel = new JPanel();
 
-    JLabel[] numbers = new JLabel[9];
-    JLabel[] characters = new JLabel[8];
+    JLabel[] numbers = new JLabel[BOARD_SIZE + 1];
+    JLabel[] characters = new JLabel[BOARD_SIZE];
     Player[] players = new Player[2];
     int redCheckers, blackCheckers;
     SimpleEntry<Integer, Integer> positionCurrentChecker;
