@@ -20,10 +20,13 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
     JLabel[] numbers = new JLabel[BOARD_SIZE + 1];
     JLabel[] characters = new JLabel[BOARD_SIZE];
-    Player[] players = new Player[2];
-    int redCheckers, blackCheckers;
+    Player[] playersInGame = new Player[2];
+    int redCheckers;
+    int blackCheckers;
     SimpleEntry<Integer, Integer> positionCurrentChecker;
-    boolean canJump, canMove, gameOver;
+    boolean canJump;
+    boolean canMove;
+    boolean gameOver;
     Message message = new Message();
     JButton startGame = new JButton();
     JButton giveUp = new JButton();
@@ -31,7 +34,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     boolean turn = false; // false for red, true for black
 
     JLabel playerTurn = new JLabel();
-    JMenuBar menuBar = new JMenuBar();
+    JMenuBar mainMenuBar = new JMenuBar();
 
     enum MoveType {NONE, MOVE, JUMP}
 
@@ -41,7 +44,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void showPlayerTurn() {
-        playerTurn.setText(players[bool2Int(turn)].getName() + " Turn");
+        playerTurn.setText(playersInGame[bool2Int(turn)].getName() + " Turn");
         if (!turn)
             playerTurn.setForeground(new Color(255, 0, 0));
         else
@@ -52,30 +55,30 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         JMenu menu = new JMenu("Menu");
         JMenuItem about = new JMenuItem("About");
         about.addActionListener(e -> JOptionPane.showMessageDialog(new JFrame(), "Game developed by Adriano Valadar"));
-        JMenuItem redPlayerName = new JMenuItem("Change " + players[0].getName() + " name");
+        JMenuItem redPlayerName = new JMenuItem("Change " + playersInGame[0].getName() + " name");
         redPlayerName.addActionListener(e -> {
             String name = JOptionPane.showInputDialog("Insert name:");
-            String oldName = players[0].getName();
-            players[0].setName(name + " (Red)");
+            String oldName = playersInGame[0].getName();
+            playersInGame[0].setName(name + " (Red)");
             message.append(oldName + " player changed name to " + name + "\n");
             showPlayerTurn();
-            score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
+            score.show(playersInGame[0].getName(), playersInGame[1].getName(), playersInGame[0].getWins(), playersInGame[1].getWins());
         });
-        JMenuItem blackPlayerName = new JMenuItem("Change " + players[1].getName() + " name");
+        JMenuItem blackPlayerName = new JMenuItem("Change " + playersInGame[1].getName() + " name");
         blackPlayerName.addActionListener(e -> {
             String name = JOptionPane.showInputDialog("Insert name:");
-            String oldName = players[1].getName();
-            players[1].setName(name + " (Black)");
+            String oldName = playersInGame[1].getName();
+            playersInGame[1].setName(name + " (Black)");
             message.append(oldName + " player changed name to " + name + "\n");
             showPlayerTurn();
-            score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
+            score.show(playersInGame[0].getName(), playersInGame[1].getName(), playersInGame[0].getWins(), playersInGame[1].getWins());
 
         });
         menu.add(redPlayerName);
         menu.add(blackPlayerName);
         menu.add(about);
-        menuBar.add(menu);
-        this.setJMenuBar(menuBar);
+        mainMenuBar.add(menu);
+        this.setJMenuBar(mainMenuBar);
 
     }
 
@@ -84,9 +87,9 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         redCheckers = 12;
         blackCheckers = 12;
         this.setTitle("Checkers Game");
-        players[0] = new Player("Red");
-        players[1] = new Player("Black");
-        score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
+        playersInGame[0] = new Player("Red");
+        playersInGame[1] = new Player("Black");
+        score.show(playersInGame[0].getName(), playersInGame[1].getName(), playersInGame[0].getWins(), playersInGame[1].getWins());
         turn = false;
         showPlayerTurn();
         centerPanel.setLayout(new GridLayout(9, 9));
@@ -211,14 +214,14 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         message.append("Game over\n");
         String name;
         if (redCheckers == 0 || !turn) {
-            name = players[1].getName();
-            players[1].increaseWins();
+            name = playersInGame[1].getName();
+            playersInGame[1].increaseWins();
         } else {
-            name = players[0].getName();
-            players[0].increaseWins();
+            name = playersInGame[0].getName();
+            playersInGame[0].increaseWins();
         }
         message.append(name + " won\n");
-        score.show(players[0].getName(), players[1].getName(), players[0].getWins(), players[1].getWins());
+        score.show(playersInGame[0].getName(), playersInGame[1].getName(), playersInGame[0].getWins(), playersInGame[1].getWins());
         this.startGame.setEnabled(true);
         this.giveUp.setEnabled(false);
         this.gameOver = true;
@@ -244,7 +247,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         boardSquares[c.position.getKey()][c.position.getValue()].setName(name);
         boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
         boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
-        message.append(players[bool2Int(turn)].getName() + " piece on " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+        message.append(playersInGame[bool2Int(turn)].getName() + " piece on " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
         if (!turn) blackCheckers--;
         else redCheckers--;
         if (isGameOver()) {
@@ -261,7 +264,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand(Checker.PieceType.NONE.name());
         boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setIcon(null);
 
-        message.append(players[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+        message.append(playersInGame[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
         boardSquares[c.position.getKey()][c.position.getValue()].setName(name);
         boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
         boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
@@ -299,14 +302,14 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 Toolkit.getDefaultToolkit().beep();
                 if (c.position.getKey() == 0) {
                     c.kingRed();
-                    message.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+                    message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
                 changePlayerTurn();
             } else if (!this.canJump) { //in this condition, we can consider that turn is true (black turn)
                 Toolkit.getDefaultToolkit().beep();
                 if (c.position.getKey() == 7) {
                     c.kingBlack();
-                    message.append(players[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+                    message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
                 changePlayerTurn();
             }
