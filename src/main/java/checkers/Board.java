@@ -349,32 +349,46 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     public void mouseReleased(MouseEvent m) {
     }
 
-    private void showLegalMoves(Object m) {
-        Checker c = (Checker) m;
-        positionCurrentChecker = c.position;
-
+    private void checkMovesAndJumps() {
         for (int row = 0; row < boardSquares.length; row++) {
             for (int col = 0; col < boardSquares.length; col++) {
-                if (!((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1))) {
-                    if (!turn && boardSquares[row][col].isRed() || turn && boardSquares[row][col].isBlack()) {
-                        if (canPerformAction(boardSquares[row][col], MoveType.MOVE)) {
-                            this.canMove = true;
-                        }
-                        if (canPerformAction(boardSquares[row][col], MoveType.JUMP)) {
-                            this.canJump = true;
-                        }
+                if (isValidSquare(row, col) && isCurrentPlayerPiece(row, col)) {
+                    checkForActions(row, col);
+                    if (this.canJump) {
+                        return;
                     }
                 }
             }
         }
+    }
 
+    private boolean isValidSquare(int row, int col) {
+        return !((row % 2 == 0 && col % 2 == 0) || (row % 2 == 1 && col % 2 == 1));
+    }
+
+    private boolean isCurrentPlayerPiece(int row, int col) {
+        return (!turn && boardSquares[row][col].isRed()) || (turn && boardSquares[row][col].isBlack());
+    }
+
+    private void checkForActions(int row, int col) {
+        if (canPerformAction(boardSquares[row][col], MoveType.MOVE)) {
+            this.canMove = true;
+        }
+        if (canPerformAction(boardSquares[row][col], MoveType.JUMP)) {
+            this.canJump = true;
+            this.canMove = false;
+        }
+    }
+
+    private void showLegalMoves(Object m) {
+        Checker c = (Checker) m;
+        positionCurrentChecker = c.position;
+        checkMovesAndJumps();
         if (this.hasChecker(c) && this.canJump) {
             boardSquares[c.position.getKey()][c.position.getValue()].setBackground(new Color(0, 153, 0));
-            if (!turn && c.isRed() || turn && c.isBlack()) {
-                if (canPerformAction(c, MoveType.JUMP)) {
-                    this.canJump = true;
-                    changeColour(c, MoveType.JUMP);
-                }
+            if (canPerformAction(c, MoveType.JUMP)) {
+                this.canJump = true;
+                changeColour(c, MoveType.JUMP);
             }
         } else if (this.hasChecker(c) && !this.canJump && this.canMove) {
             boardSquares[c.position.getKey()][c.position.getValue()].setBackground(new Color(0, 153, 0));
