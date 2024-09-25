@@ -38,6 +38,9 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
     enum MoveType {NONE, MOVE, JUMP}
 
+    Color lightOrange = new Color(249, 192, 102);
+    Color darkBrown = new Color(158, 76, 16);
+
     private void changePlayerTurn() {
         turn = !turn;
         showPlayerTurn();
@@ -46,9 +49,9 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     private void showPlayerTurn() {
         playerTurn.setText(playersInGame[bool2Int(turn)].getName() + " Turn");
         if (!turn)
-            playerTurn.setForeground(new Color(255, 0, 0));
+            playerTurn.setForeground(Color.RED);
         else
-            playerTurn.setForeground(new Color(0, 0, 0));
+            playerTurn.setForeground(Color.BLACK);
     }
 
     private void setMenuBar() {
@@ -158,7 +161,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 Checker b = new Checker();
                 b.setBorder(null);
                 if (i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1) {
-                    b.setBackground(new Color(249, 192, 102));
+                    b.setBackground(lightOrange);
                     boardSquares[i][j] = b;
 
                 } else {
@@ -174,7 +177,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
                     } else {
                         Checker c = new Checker(i, j);
-                        c.setBackground(new Color(158, 76, 16));
+                        c.setBackground(darkBrown);
                         boardSquares[i][j] = c;
 
                     }
@@ -274,7 +277,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         for (int i = 0; i < boardSquares.length; i++) {
             for (int j = 0; j < boardSquares.length; j++) {
                 if (!(i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1)) {
-                    boardSquares[i][j].setBackground(new Color(158, 76, 16));
+                    boardSquares[i][j].setBackground(darkBrown);
                 }
             }
         }
@@ -284,7 +287,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     public void mouseClicked(MouseEvent m) {
         Checker c = (Checker) m.getSource();
         this.canMove = false;
-        if (c.getBackground().equals(new Color(255, 0, 0))) {
+        if (c.getBackground().equals(Color.RED)) {
             jumpChecker(c);
             clear();
             this.canJump = false;
@@ -293,7 +296,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 if (canPerformAction(c, MoveType.JUMP)) {
                     this.canJump = true;
                     positionCurrentChecker = c.position;
-                    boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setBackground(new Color(0, 153, 0));
+                    boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setBackground(Color.GREEN.darker());
                     changeColour(c, MoveType.JUMP);
                 }
             }
@@ -313,7 +316,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                 }
                 changePlayerTurn();
             }
-        } else if (c.getBackground().equals(new Color(255, 255, 0))) {
+        } else if (c.getBackground().equals(Color.YELLOW)) {
             moveChecker(c);
             clear();
             if (!turn) {
@@ -385,13 +388,13 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         positionCurrentChecker = c.position;
         checkMovesAndJumps();
         if (this.hasChecker(c) && this.canJump) {
-            boardSquares[c.position.getKey()][c.position.getValue()].setBackground(new Color(0, 153, 0));
+            boardSquares[c.position.getKey()][c.position.getValue()].setBackground(Color.GREEN.darker());
             if (canPerformAction(c, MoveType.JUMP)) {
                 this.canJump = true;
                 changeColour(c, MoveType.JUMP);
             }
         } else if (this.hasChecker(c) && !this.canJump && this.canMove) {
-            boardSquares[c.position.getKey()][c.position.getValue()].setBackground(new Color(0, 153, 0));
+            boardSquares[c.position.getKey()][c.position.getValue()].setBackground(Color.GREEN.darker());
             positionCurrentChecker = c.position;
             if (canPerformAction(c, MoveType.MOVE)) {
                 changeColour(c, MoveType.MOVE);
@@ -410,9 +413,9 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         for (SimpleEntry<Integer, Integer> p : positionsJump) {
             if (isPositionInvalid(p)) continue;
             if (m == MoveType.JUMP && isValidJump(c, p)) {
-                setBoardSquareColor(p, new Color(255, 0, 0));
+                setBoardSquareColor(p, Color.RED);
             } else if (m == MoveType.MOVE && isValidMove(c)) {
-                setBoardSquareColor(p, new Color(255, 255, 0));
+                setBoardSquareColor(p, Color.YELLOW);
             }
         }
     }
