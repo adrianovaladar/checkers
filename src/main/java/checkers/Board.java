@@ -41,9 +41,20 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     Color lightOrange = new Color(249, 192, 102);
     Color darkBrown = new Color(158, 76, 16);
 
-    private void changePlayerTurn() {
+    private void processPlayerTurn() {
         turn = !turn;
         showPlayerTurn();
+        checkMovesAndJumps();
+        StringBuilder m = new StringBuilder();
+        if (this.canJump) {
+            m.append(playersInGame[bool2Int(turn)].getName())
+                    .append(" is obliged to jump")
+                    .append(System.lineSeparator());
+            message.append(m.toString());
+        }
+        if (isGameOver()) {
+            gameOver();
+        }
     }
 
     private void showPlayerTurn() {
@@ -200,7 +211,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private boolean isGameOver() {
-        return redCheckers == 0 || blackCheckers == 0;
+        return redCheckers == 0 || blackCheckers == 0 || (!this.canJump && !this.canMove);
     }
 
     private void removeCheckerActions() {
@@ -253,9 +264,6 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         message.append(playersInGame[bool2Int(turn)].getName() + " piece on " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
         if (!turn) blackCheckers--;
         else redCheckers--;
-        if (isGameOver()) {
-            gameOver();
-        }
     }
 
     private void moveChecker(Checker c) {
@@ -307,14 +315,14 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                     c.kingRed();
                     message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
-                changePlayerTurn();
+                processPlayerTurn();
             } else if (!this.canJump) { //in this condition, we can consider that turn is true (black turn)
                 Toolkit.getDefaultToolkit().beep();
                 if (c.position.getKey() == 7) {
                     c.kingBlack();
                     message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
-                changePlayerTurn();
+                processPlayerTurn();
             }
         } else if (c.getBackground().equals(Color.YELLOW)) {
             moveChecker(c);
@@ -329,7 +337,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                     c.kingBlack();
                 }
             }
-            changePlayerTurn();
+            processPlayerTurn();
             Toolkit.getDefaultToolkit().beep();
         } else {
             clear();
@@ -395,8 +403,6 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             if (canPerformAction(c, MoveType.MOVE)) {
                 changeColour(c, MoveType.MOVE);
             }
-        } else if (this.hasChecker(c) && !this.canJump && !this.canMove && isCurrentPlayerPieceAndTurn(c)) {
-                gameOver();
         }
     }
 
