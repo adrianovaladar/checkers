@@ -164,7 +164,6 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             char character = (char) ('A' + i);
             characters[i] = new JLabel(String.valueOf(character), SwingConstants.CENTER);
         }
-
         for (int i = 0; i < boardSquares.length; i++) {
             JLabel j1 = new JLabel(8 - i + "", SwingConstants.CENTER);
             centerPanel.add(j1);
@@ -176,31 +175,15 @@ public class Board extends JFrame implements MouseListener, ActionListener {
                     boardSquares[i][j] = b;
 
                 } else {
-                    if (i < 3) {
-                        Checker black = new Checker(i, j);
-                        boardSquares[i][j] = black;
-                        //BoardSquares[i][j].addActionListener(this);
-
-                    } else if (i > 4) {
-                        Checker red = new Checker(i, j);
-                        boardSquares[i][j] = red;
-                        //BoardSquares[i][j].addActionListener(this);
-
-                    } else {
-                        Checker c = new Checker(i, j);
-                        c.setBackground(darkBrown);
-                        boardSquares[i][j] = c;
-
-                    }
+                    Checker c = new Checker(i, j);
+                    boardSquares[i][j] = c;
                     boardSquares[i][j].addMouseListener(this);
-
+                    boardSquares[i][j].setBackground(darkBrown);
                 }
                 centerPanel.add(boardSquares[i][j]);
             }
-
         }
         centerPanel.add(numbers[0]);
-
         for (JLabel ch : characters) {
             centerPanel.add(ch);
         }

@@ -48,8 +48,6 @@ public class Checker extends JButton {
 
     public Checker(int i, int j) {
         position = new SimpleEntry<>(i, j);
-        this.setBackground(new Color(158, 76, 16));
-
         if (i < BLACK_SETUP_END_ROW) {
             blackMan();
         } else if (i > RED_SETUP_START_ROW) {
