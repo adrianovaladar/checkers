@@ -30,12 +30,14 @@ public class Checker extends JButton {
         }
     }
 
-    public void kingRed() {
-        setCheckerAttributes(PieceType.KING, PieceColour.RED, "/red_king.png");
-    }
-
-    public void kingBlack() {
-        setCheckerAttributes(PieceType.KING, PieceColour.BLACK, "/black_king.png");
+    public void setKing(PieceColour colour) {
+        String imagePath;
+        switch (colour) {
+            case PieceColour.RED -> imagePath = "/red_king.png";
+            case PieceColour.BLACK -> imagePath = "/black_king.png";
+            default -> imagePath = "/none";
+        }
+        setCheckerAttributes(PieceType.KING, colour, imagePath);
     }
 
     public void redMan() {

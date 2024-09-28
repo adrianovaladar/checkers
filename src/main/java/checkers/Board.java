@@ -295,14 +295,14 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             if (!this.canJump && !turn) {
                 Toolkit.getDefaultToolkit().beep();
                 if (c.position.getKey() == 0) {
-                    c.kingRed();
+                    c.setKing(Checker.PieceColour.RED);
                     message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
                 processPlayerTurn();
             } else if (!this.canJump) { //in this condition, we can consider that turn is true (black turn)
                 Toolkit.getDefaultToolkit().beep();
                 if (c.position.getKey() == 7) {
-                    c.kingBlack();
+                    c.setKing(Checker.PieceColour.BLACK);
                     message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
                 processPlayerTurn();
@@ -312,12 +312,12 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             clear();
             if (!turn) {
                 if (c.position.getKey() == 0) {
-                    c.kingRed();
+                    c.setKing(Checker.PieceColour.RED);
                 }
             } else {
                 if (c.position.getKey() == 7) {
 
-                    c.kingBlack();
+                    c.setKing(Checker.PieceColour.BLACK);
                 }
             }
             processPlayerTurn();
