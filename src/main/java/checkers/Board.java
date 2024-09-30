@@ -283,26 +283,24 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             clear();
             this.canJump = false;
 
-            if (isCurrentPlayerPieceAndTurn(c)) {
-                if (canPerformAction(c, MoveType.JUMP)) {
-                    this.canJump = true;
-                    positionCurrentChecker = c.position;
-                    boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setBackground(Color.GREEN.darker());
-                    changeColour(c, MoveType.JUMP);
-                }
+            if (isCurrentPlayerPieceAndTurn(c) && canPerformAction(c, MoveType.JUMP)) {
+                this.canJump = true;
+                positionCurrentChecker = c.position;
+                boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setBackground(Color.GREEN.darker());
+                changeColour(c, MoveType.JUMP);
             }
 
-            if (!this.canJump && !turn) {
+            if (!this.canJump) {
                 Toolkit.getDefaultToolkit().beep();
-                if (c.position.getKey() == 0) {
+                boolean setKing = false;
+                if (isCurrentRedPlayerPieceAndTurn(c) && c.position.getKey() == 0) {
                     c.setKing(Checker.PieceColour.RED);
-                    message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
-                }
-                processPlayerTurn();
-            } else if (!this.canJump) { //in this condition, we can consider that turn is true (black turn)
-                Toolkit.getDefaultToolkit().beep();
-                if (c.position.getKey() == 7) {
+                    setKing = true;
+                } else if (isCurrentBlackPlayerPieceAndTurn(c) && c.position.getKey() == BOARD_SIZE - 1) {
                     c.setKing(Checker.PieceColour.BLACK);
+                    setKing = true;
+                }
+                if (setKing) {
                     message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
                 }
                 processPlayerTurn();
