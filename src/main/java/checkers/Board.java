@@ -274,6 +274,20 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
     }
 
+    private void handleKingPromotion(Checker c) {
+        boolean setKing = false;
+        if (isCurrentRedPlayerPieceAndTurn(c) && c.isMan() && c.position.getKey() == 0) {
+            c.setKing(Checker.PieceColour.RED);
+            setKing = true;
+        } else if (isCurrentBlackPlayerPieceAndTurn(c) && c.isMan() && c.position.getKey() == BOARD_SIZE - 1) {
+            c.setKing(Checker.PieceColour.BLACK);
+            setKing = true;
+        }
+        if (setKing) {
+            message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+        }
+    }
+
     @Override
     public void mouseClicked(MouseEvent m) {
         Checker c = (Checker) m.getSource();
@@ -292,32 +306,13 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
             if (!this.canJump) {
                 Toolkit.getDefaultToolkit().beep();
-                boolean setKing = false;
-                if (isCurrentRedPlayerPieceAndTurn(c) && c.position.getKey() == 0) {
-                    c.setKing(Checker.PieceColour.RED);
-                    setKing = true;
-                } else if (isCurrentBlackPlayerPieceAndTurn(c) && c.position.getKey() == BOARD_SIZE - 1) {
-                    c.setKing(Checker.PieceColour.BLACK);
-                    setKing = true;
-                }
-                if (setKing) {
-                    message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
-                }
+                handleKingPromotion(c);
                 processPlayerTurn();
             }
         } else if (c.getBackground().equals(Color.YELLOW)) {
             moveChecker(c);
             clear();
-            if (!turn) {
-                if (c.position.getKey() == 0) {
-                    c.setKing(Checker.PieceColour.RED);
-                }
-            } else {
-                if (c.position.getKey() == 7) {
-
-                    c.setKing(Checker.PieceColour.BLACK);
-                }
-            }
+            handleKingPromotion(c);
             processPlayerTurn();
             Toolkit.getDefaultToolkit().beep();
         } else {
