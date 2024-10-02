@@ -365,6 +365,9 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
     private void showLegalMoves(Object m) {
         Checker c = (Checker) m;
+        if (!isCurrentPlayerPieceAndTurn(c)) {
+            return;
+        }
         positionCurrentChecker = c.position;
         checkMovesAndJumps();
         if (this.hasChecker(c) && this.canJump) {
