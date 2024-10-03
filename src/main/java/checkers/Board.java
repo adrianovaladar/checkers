@@ -70,30 +70,23 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         JMenuItem about = new JMenuItem("About");
         about.addActionListener(e -> JOptionPane.showMessageDialog(new JFrame(), "Game developed by Adriano Valadar"));
         JMenuItem redPlayerName = new JMenuItem("Change " + playersInGame[0].getName() + " name");
-        redPlayerName.addActionListener(e -> {
-            String name = JOptionPane.showInputDialog("Insert name:");
-            String oldName = playersInGame[0].getName();
-            playersInGame[0].setName(name + " (Red)");
-            message.append(oldName + " player changed name to " + name + "\n");
-            showPlayerTurn();
-            score.show(playersInGame[0].getName(), playersInGame[1].getName(), playersInGame[0].getWins(), playersInGame[1].getWins());
-        });
+        redPlayerName.addActionListener(e -> changePlayerName(0, "Red"));
         JMenuItem blackPlayerName = new JMenuItem("Change " + playersInGame[1].getName() + " name");
-        blackPlayerName.addActionListener(e -> {
-            String name = JOptionPane.showInputDialog("Insert name:");
-            String oldName = playersInGame[1].getName();
-            playersInGame[1].setName(name + " (Black)");
-            message.append(oldName + " player changed name to " + name + "\n");
-            showPlayerTurn();
-            score.show(playersInGame[0].getName(), playersInGame[1].getName(), playersInGame[0].getWins(), playersInGame[1].getWins());
-
-        });
+        blackPlayerName.addActionListener(e -> changePlayerName(1, "Black"));
         menu.add(redPlayerName);
         menu.add(blackPlayerName);
         menu.add(about);
         mainMenuBar.add(menu);
         this.setJMenuBar(mainMenuBar);
+    }
 
+    private void changePlayerName(int playerIndex, String colour) {
+        String name = JOptionPane.showInputDialog("Insert name:");
+        String oldName = playersInGame[playerIndex].getName();
+        playersInGame[playerIndex].setName(name + " (" + colour + ")");
+        message.append(oldName + " player changed name to " + name + "\n");
+        showPlayerTurn();
+        score.show(playersInGame[0].getName(), playersInGame[1].getName(), playersInGame[0].getWins(), playersInGame[1].getWins());
     }
 
     private void startGUI() {
