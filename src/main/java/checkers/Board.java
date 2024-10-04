@@ -163,7 +163,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
             for (int j = 0; j < boardSquares.length; j++) {
                 Checker b = new Checker();
                 b.setBorder(null);
-                if (i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1) {
+                if (!isPositionValid(i, j)) {
                     b.setBackground(lightOrange);
                     boardSquares[i][j] = b;
 
@@ -182,6 +182,10 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         }
     }
 
+    private boolean isPositionValid(int i, int j) {
+        return i % 2 != j % 2;
+    }
+
     private boolean hasChecker(Checker c) {
         return !c.getName().equals(Checker.PieceType.NONE.name());
     }
@@ -193,7 +197,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     private void removeCheckerActions() {
         for (int i = 0; i < boardSquares.length; i++) {
             for (int j = 0; j < boardSquares.length; j++) {
-                if (!(i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1)) {
+                if (!(isPositionValid(i, j))) {
                     boardSquares[i][j].removeMouseListener(this);
                 }
             }
@@ -260,7 +264,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     private void clear() {
         for (int i = 0; i < boardSquares.length; i++) {
             for (int j = 0; j < boardSquares.length; j++) {
-                if (!(i % 2 == 0 && j % 2 == 0 || i % 2 == 1 && j % 2 == 1)) {
+                if (isPositionValid(i, j)) {
                     boardSquares[i][j].setBackground(darkBrown);
                 }
             }
