@@ -1,15 +1,13 @@
 package checkers;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class Score extends JLabel {
-
-    public Score() {
-        this.setForeground(new Color(0, 0, 0));
-    }
-
     public void show(String redName, String blackName, int redWins, int blackWins) {
-        this.setText(redName + " " + redWins + " - " + blackWins + " " + blackName);
+        this.setText("<html>" +
+                "<span style='color:red;'>" + redName + " " + redWins + "</span>" +
+                " <span style='font-weight:normal;'>-</span> " +
+                "<span style='color:black;'>" + blackWins + " " + blackName + "</span>" +
+                "</html>");
     }
 }
