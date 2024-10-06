@@ -70,9 +70,9 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         JMenuItem about = new JMenuItem("About");
         about.addActionListener(e -> JOptionPane.showMessageDialog(new JFrame(), "Game developed by Adriano Valadar"));
         JMenuItem redPlayerName = new JMenuItem("Change " + playersInGame[0].getName() + " name");
-        redPlayerName.addActionListener(e -> changePlayerName(0, "Red"));
+        redPlayerName.addActionListener(e -> changePlayerName(0));
         JMenuItem blackPlayerName = new JMenuItem("Change " + playersInGame[1].getName() + " name");
-        blackPlayerName.addActionListener(e -> changePlayerName(1, "Black"));
+        blackPlayerName.addActionListener(e -> changePlayerName(1));
         menu.add(redPlayerName);
         menu.add(blackPlayerName);
         menu.add(about);
@@ -80,11 +80,11 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         this.setJMenuBar(mainMenuBar);
     }
 
-    private void changePlayerName(int playerIndex, String colour) {
+    private void changePlayerName(int playerIndex) {
         String name = JOptionPane.showInputDialog("Insert name:");
         String oldName = playersInGame[playerIndex].getName();
-        playersInGame[playerIndex].setName(name + " (" + colour + ")");
-        message.append(oldName + " player changed name to " + name + "\n");
+        playersInGame[playerIndex].setName(name);
+        message.append(oldName + " changed name to " + name + System.lineSeparator());
         showPlayerTurn();
         score.show(playersInGame[0].getName(), playersInGame[1].getName(), playersInGame[0].getWins(), playersInGame[1].getWins());
     }
