@@ -90,9 +90,6 @@ public class Board extends JFrame implements MouseListener, ActionListener {
     }
 
     private void startGUI() {
-
-        redCheckers = 12;
-        blackCheckers = 12;
         this.setTitle("Checkers Game");
         playersInGame[0] = new Player("Red");
         playersInGame[1] = new Player("Black");
@@ -101,6 +98,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         showPlayerTurn();
         centerPanel.setLayout(new GridLayout(9, 9));
         this.addBoard();
+        countPieces();
         centerPanel.setPreferredSize(new Dimension(560, 560));
         centerPanel.setMinimumSize(new Dimension(560, 560));
 
@@ -144,6 +142,20 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         this.pack();
         this.setVisible(true);
 
+    }
+
+    private void countPieces() {
+        for (int i = 0; i < boardSquares.length; i++) {
+            for (int j = 0; j < boardSquares.length; j++) {
+                if (isPositionValid(i, j)) {
+                    if (boardSquares[i][j].isRed()) {
+                        redCheckers++;
+                    } else if (boardSquares[i][j].isBlack()) {
+                        blackCheckers++;
+                    }
+                }
+            }
+        }
     }
 
     private int bool2Int(boolean b) {
@@ -242,8 +254,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
         boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
         message.append(playersInGame[bool2Int(turn)].getName() + " piece on " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
-        if (!turn) blackCheckers--;
-        else redCheckers--;
+        countPieces();
     }
 
     private void moveChecker(Checker c) {
