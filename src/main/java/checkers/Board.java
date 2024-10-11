@@ -133,7 +133,7 @@ public class Board extends JFrame implements MouseListener, ActionListener {
         this.add(southPanel, BorderLayout.SOUTH);
     }
 
-    private Board() {
+    public Board() {
         this.startGUI();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
@@ -488,7 +488,4 @@ public class Board extends JFrame implements MouseListener, ActionListener {
 
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(Board::new);
-    }
 }
