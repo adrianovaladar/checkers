@@ -10,16 +10,12 @@ import java.util.ArrayList;
 import java.util.AbstractMap.SimpleEntry;
 
 public class Game extends JFrame implements MouseListener, ActionListener {
-    private static final int BOARD_SIZE = 8;
-    Checker[][] boardSquares = new Checker[BOARD_SIZE][BOARD_SIZE];
 
-    JPanel centerPanel = new Board();
+    Board board = new Board(this); // center panel
     JPanel northPanel = new JPanel();
     JPanel eastPanel = new JPanel();
     JPanel southPanel = new JPanel();
 
-    JLabel[] numbers = new JLabel[BOARD_SIZE + 1];
-    JLabel[] characters = new JLabel[BOARD_SIZE];
     Player[] playersInGame = new Player[2];
     int redCheckers;
     int blackCheckers;
@@ -37,9 +33,6 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     JMenuBar mainMenuBar = new JMenuBar();
 
     enum MoveType {NONE, MOVE, JUMP}
-
-    Color lightOrange = new Color(249, 192, 102);
-    Color darkBrown = new Color(158, 76, 16);
 
     private void processPlayerTurn() {
         turn = !turn;
@@ -96,7 +89,7 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         score.show(playersInGame[0].getName(), playersInGame[1].getName(), playersInGame[0].getWins(), playersInGame[1].getWins());
         turn = false;
         showPlayerTurn();
-        this.addBoard();
+        board.create();
         countPieces();
 
         southPanel.add(score);
@@ -124,7 +117,7 @@ public class Game extends JFrame implements MouseListener, ActionListener {
 
         this.setMenuBar();
         this.setLayout(new BorderLayout());
-        this.add(centerPanel, BorderLayout.CENTER);
+        this.add(board, BorderLayout.CENTER);
         this.add(northPanel, BorderLayout.NORTH);
         this.add(eastPanel, BorderLayout.EAST);
         this.add(southPanel, BorderLayout.SOUTH);
@@ -142,12 +135,12 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     }
 
     private void countPieces() {
-        for (int i = 0; i < boardSquares.length; i++) {
-            for (int j = 0; j < boardSquares.length; j++) {
-                if (isPositionValid(i, j)) {
-                    if (boardSquares[i][j].isRed()) {
+        for (int i = 0; i < board.boardSquares.length; i++) {
+            for (int j = 0; j < board.boardSquares.length; j++) {
+                if (board.isPositionValid(i, j)) {
+                    if (board.boardSquares[i][j].isRed()) {
                         redCheckers++;
-                    } else if (boardSquares[i][j].isBlack()) {
+                    } else if (board.boardSquares[i][j].isBlack()) {
                         blackCheckers++;
                     }
                 }
@@ -159,42 +152,6 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         return b ? 1 : 0;
     }
 
-    private void addBoard() {
-        this.gameOver = false;
-        numbers[0] = new JLabel("");
-        for (int i = 0; i < characters.length; i++) {
-            char character = (char) ('A' + i);
-            characters[i] = new JLabel(String.valueOf(character), SwingConstants.CENTER);
-        }
-        for (int i = 0; i < boardSquares.length; i++) {
-            JLabel j1 = new JLabel(8 - i + "", SwingConstants.CENTER);
-            centerPanel.add(j1);
-            for (int j = 0; j < boardSquares.length; j++) {
-                Checker b = new Checker();
-                b.setBorder(null);
-                if (!isPositionValid(i, j)) {
-                    b.setBackground(lightOrange);
-                    boardSquares[i][j] = b;
-
-                } else {
-                    Checker c = new Checker(i, j);
-                    boardSquares[i][j] = c;
-                    boardSquares[i][j].addMouseListener(this);
-                    boardSquares[i][j].setBackground(darkBrown);
-                }
-                centerPanel.add(boardSquares[i][j]);
-            }
-        }
-        centerPanel.add(numbers[0]);
-        for (JLabel ch : characters) {
-            centerPanel.add(ch);
-        }
-    }
-
-    private boolean isPositionValid(int i, int j) {
-        return i % 2 != j % 2;
-    }
-
     private boolean hasChecker(Checker c) {
         return !c.getName().equals(Checker.PieceType.NONE.name());
     }
@@ -204,10 +161,10 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     }
 
     private void removeCheckerActions() {
-        for (int i = 0; i < boardSquares.length; i++) {
-            for (int j = 0; j < boardSquares.length; j++) {
-                if (!(isPositionValid(i, j))) {
-                    boardSquares[i][j].removeMouseListener(this);
+        for (int i = 0; i < board.boardSquares.length; i++) {
+            for (int j = 0; j < board.boardSquares.length; j++) {
+                if (!(board.isPositionValid(i, j))) {
+                    board.boardSquares[i][j].removeMouseListener(this);
                 }
             }
         }
@@ -237,43 +194,43 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         int jumpedCheckerColumn;
         jumpedCheckerRow = (positionCurrentChecker.getKey() + c.position.getKey()) / 2;
         jumpedCheckerColumn = (positionCurrentChecker.getValue() + c.position.getValue()) / 2;
-        boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setName(Checker.PieceColour.NONE.name());
-        boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setActionCommand(Checker.PieceType.NONE.name());
-        boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setIcon(null);
+        board.boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setName(Checker.PieceColour.NONE.name());
+        board.boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setActionCommand(Checker.PieceType.NONE.name());
+        board.boardSquares[jumpedCheckerRow][jumpedCheckerColumn].setIcon(null);
 
-        String name = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getName();
-        String action = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getActionCommand();
-        Icon icon = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getIcon();
-        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand(Checker.PieceType.NONE.name());
-        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setIcon(null);
-        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setName(Checker.PieceColour.NONE.name());
-        boardSquares[c.position.getKey()][c.position.getValue()].setName(name);
-        boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
-        boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
-        message.append(playersInGame[bool2Int(turn)].getName() + " piece on " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " jumped on " + this.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+        String name = board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getName();
+        String action = board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getActionCommand();
+        Icon icon = board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getIcon();
+        board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand(Checker.PieceType.NONE.name());
+        board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setIcon(null);
+        board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setName(Checker.PieceColour.NONE.name());
+        board.boardSquares[c.position.getKey()][c.position.getValue()].setName(name);
+        board.boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
+        board.boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
+        message.append(playersInGame[bool2Int(turn)].getName() + " piece on " + board.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " jumped on " + board.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + board.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
         countPieces();
     }
 
     private void moveChecker(Checker c) {
-        String name = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getName();
-        String action = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getActionCommand();
-        Icon icon = boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getIcon();
+        String name = board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getName();
+        String action = board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getActionCommand();
+        Icon icon = board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].getIcon();
 
-        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setName(Checker.PieceColour.NONE.name());
-        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand(Checker.PieceType.NONE.name());
-        boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setIcon(null);
+        board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setName(Checker.PieceColour.NONE.name());
+        board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setActionCommand(Checker.PieceType.NONE.name());
+        board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setIcon(null);
 
-        message.append(playersInGame[bool2Int(turn)].getName() + " moved piece from " + this.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " to " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
-        boardSquares[c.position.getKey()][c.position.getValue()].setName(name);
-        boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
-        boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
+        message.append(playersInGame[bool2Int(turn)].getName() + " moved piece from " + board.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " to " + board.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+        board.boardSquares[c.position.getKey()][c.position.getValue()].setName(name);
+        board.boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
+        board.boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
     }
 
     private void clear() {
-        for (int i = 0; i < boardSquares.length; i++) {
-            for (int j = 0; j < boardSquares.length; j++) {
-                if (isPositionValid(i, j)) {
-                    boardSquares[i][j].setBackground(darkBrown);
+        for (int i = 0; i < board.boardSquares.length; i++) {
+            for (int j = 0; j < board.boardSquares.length; j++) {
+                if (board.isPositionValid(i, j)) {
+                    board.boardSquares[i][j].setBackground(board.darkBrown);
                 }
             }
         }
@@ -284,12 +241,12 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         if (isCurrentRedPlayerPieceAndTurn(c) && c.isMan() && c.position.getKey() == 0) {
             c.setKing(Checker.PieceColour.RED);
             setKing = true;
-        } else if (isCurrentBlackPlayerPieceAndTurn(c) && c.isMan() && c.position.getKey() == BOARD_SIZE - 1) {
+        } else if (isCurrentBlackPlayerPieceAndTurn(c) && c.isMan() && c.position.getKey() == Board.BOARD_SIZE - 1) {
             c.setKing(Checker.PieceColour.BLACK);
             setKing = true;
         }
         if (setKing) {
-            message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + this.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
+            message.append(playersInGame[bool2Int(turn)].getName() + " has a king in " + board.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
         }
     }
 
@@ -305,7 +262,7 @@ public class Game extends JFrame implements MouseListener, ActionListener {
             if (isCurrentPlayerPieceAndTurn(c) && canPerformAction(c, MoveType.JUMP)) {
                 this.canJump = true;
                 positionCurrentChecker = c.position;
-                boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setBackground(Color.GREEN.darker());
+                board.boardSquares[positionCurrentChecker.getKey()][positionCurrentChecker.getValue()].setBackground(Color.GREEN.darker());
                 changeColour(c, MoveType.JUMP);
             }
 
@@ -342,8 +299,8 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     }
 
     private void checkMovesAndJumps() {
-        for (int row = 0; row < boardSquares.length; row++) {
-            for (int col = 0; col < boardSquares.length; col++) {
+        for (int row = 0; row < board.boardSquares.length; row++) {
+            for (int col = 0; col < board.boardSquares.length; col++) {
                 if (isValidSquare(row, col) && isCurrentPlayerPieceAndTurn(row, col)) {
                     checkForActions(row, col);
                     if (this.canJump) {
@@ -359,10 +316,10 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     }
 
     private void checkForActions(int row, int col) {
-        if (canPerformAction(boardSquares[row][col], MoveType.MOVE)) {
+        if (canPerformAction(board.boardSquares[row][col], MoveType.MOVE)) {
             this.canMove = true;
         }
-        if (canPerformAction(boardSquares[row][col], MoveType.JUMP)) {
+        if (canPerformAction(board.boardSquares[row][col], MoveType.JUMP)) {
             this.canJump = true;
             this.canMove = false;
         }
@@ -376,13 +333,13 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         positionCurrentChecker = c.position;
         checkMovesAndJumps();
         if (this.hasChecker(c) && this.canJump) {
-            boardSquares[c.position.getKey()][c.position.getValue()].setBackground(Color.GREEN.darker());
+            board.boardSquares[c.position.getKey()][c.position.getValue()].setBackground(Color.GREEN.darker());
             if (canPerformAction(c, MoveType.JUMP)) {
                 this.canJump = true;
                 changeColour(c, MoveType.JUMP);
             }
         } else if (this.hasChecker(c) && !this.canJump && this.canMove) {
-            boardSquares[c.position.getKey()][c.position.getValue()].setBackground(Color.GREEN.darker());
+            board.boardSquares[c.position.getKey()][c.position.getValue()].setBackground(Color.GREEN.darker());
             positionCurrentChecker = c.position;
             if (canPerformAction(c, MoveType.MOVE)) {
                 changeColour(c, MoveType.MOVE);
@@ -391,7 +348,7 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     }
 
     private void setBoardSquareColor(SimpleEntry<Integer, Integer> position, Color color) {
-        boardSquares[position.getKey()][position.getValue()].setBackground(color);
+        board.boardSquares[position.getKey()][position.getValue()].setBackground(color);
     }
 
     private void changeColour(Checker c, MoveType m) {
@@ -421,11 +378,11 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     }
 
     private boolean isValidJump(Checker c, SimpleEntry<Integer, Integer> p) {
-        return (!turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed());
+        return (!turn && board.boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && board.boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed());
     }
 
     private boolean isCurrentPlayerPieceAndTurn(int row, int col) {
-        return (!turn && boardSquares[row][col].isRed()) || (turn && boardSquares[row][col].isBlack());
+        return (!turn && board.boardSquares[row][col].isRed()) || (turn && board.boardSquares[row][col].isBlack());
     }
 
     private boolean isCurrentRedPlayerPieceAndTurn(Checker c) {
@@ -441,8 +398,8 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     }
 
     private boolean isPositionInvalid(SimpleEntry<Integer, Integer> p) {
-        boolean positionOffBoard = p.getKey() < 0 || p.getKey() >= boardSquares.length || p.getValue() < 0 || p.getValue() >= boardSquares.length;
-        boolean positionContainPiece = !boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name());
+        boolean positionOffBoard = p.getKey() < 0 || p.getKey() >= board.boardSquares.length || p.getValue() < 0 || p.getValue() >= board.boardSquares.length;
+        boolean positionContainPiece = !board.boardSquares[p.getKey()][p.getValue()].getName().equals(Checker.PieceType.NONE.name());
         return positionOffBoard || positionContainPiece;
     }
 
@@ -456,22 +413,16 @@ public class Game extends JFrame implements MouseListener, ActionListener {
             positions.add(new SimpleEntry<>(c.position.getKey() + moveType.ordinal(), c.position.getValue() + moveType.ordinal()));
             positions.add(new SimpleEntry<>(c.position.getKey() + moveType.ordinal(), c.position.getValue() - moveType.ordinal()));
         }
-        positions.removeIf(position -> position.getKey() < 0 || position.getValue() < 0 || position.getValue() >= boardSquares.length || position.getKey() >= boardSquares.length);
+        positions.removeIf(position -> position.getKey() < 0 || position.getValue() < 0 || position.getValue() >= board.boardSquares.length || position.getKey() >= board.boardSquares.length);
         return positions;
-    }
-
-    private String positionToText(int y, int x) {
-        String position = "";
-        position += characters[x].getText() + (boardSquares.length - y);
-        return position;
     }
 
     @Override
     public void actionPerformed(ActionEvent ae) {
         if (this.gameOver) {
-            centerPanel.removeAll();
-            addBoard();
-            centerPanel.revalidate();
+            board.removeAll();
+            board.create();
+            board.revalidate();
             this.startGame.setEnabled(false);
             this.giveUp.setEnabled(true);
             this.gameOver = false;
