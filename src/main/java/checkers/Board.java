@@ -61,4 +61,13 @@ public class Board extends JPanel {
         return position;
     }
 
+    public void removeCheckerActions() {
+        for (int i = 0; i < this.boardSquares.length; i++) {
+            for (int j = 0; j < this.boardSquares.length; j++) {
+                if (!(this.isPositionValid(i, j))) {
+                    this.boardSquares[i][j].removeMouseListener(listener);
+                }
+            }
+        }
+    }
 }

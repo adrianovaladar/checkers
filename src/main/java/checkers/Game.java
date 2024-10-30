@@ -160,16 +160,6 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         return redCheckers == 0 || blackCheckers == 0 || (!this.canJump && !this.canMove);
     }
 
-    private void removeCheckerActions() {
-        for (int i = 0; i < board.boardSquares.length; i++) {
-            for (int j = 0; j < board.boardSquares.length; j++) {
-                if (!(board.isPositionValid(i, j))) {
-                    board.boardSquares[i][j].removeMouseListener(this);
-                }
-            }
-        }
-    }
-
     private void gameOver() {
         message.append("Game over\n");
         String name;
@@ -186,7 +176,7 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         this.giveUp.setEnabled(false);
         this.gameOver = true;
 
-        removeCheckerActions();
+        board.removeCheckerActions();
     }
 
     private void jumpChecker(Checker c) {
