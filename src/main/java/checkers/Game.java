@@ -17,8 +17,6 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     JPanel southPanel = new JPanel();
 
     Player[] playersInGame = new Player[2];
-    int redCheckers;
-    int blackCheckers;
     SimpleEntry<Integer, Integer> positionCurrentChecker;
     boolean canJump;
     boolean canMove;
@@ -90,7 +88,7 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         turn = false;
         showPlayerTurn();
         board.create();
-        countPieces();
+        board.countPieces();
 
         southPanel.add(score);
         northPanel.add(playerTurn);
@@ -134,20 +132,6 @@ public class Game extends JFrame implements MouseListener, ActionListener {
 
     }
 
-    private void countPieces() {
-        for (int i = 0; i < board.boardSquares.length; i++) {
-            for (int j = 0; j < board.boardSquares.length; j++) {
-                if (board.isPositionValid(i, j)) {
-                    if (board.boardSquares[i][j].isRed()) {
-                        redCheckers++;
-                    } else if (board.boardSquares[i][j].isBlack()) {
-                        blackCheckers++;
-                    }
-                }
-            }
-        }
-    }
-
     private int bool2Int(boolean b) {
         return b ? 1 : 0;
     }
@@ -157,13 +141,13 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     }
 
     private boolean isGameOver() {
-        return redCheckers == 0 || blackCheckers == 0 || (!this.canJump && !this.canMove);
+        return board.redCheckers == 0 || board.blackCheckers == 0 || (!this.canJump && !this.canMove);
     }
 
     private void gameOver() {
         message.append("Game over\n");
         String name;
-        if (redCheckers == 0 || !turn) {
+        if (board.redCheckers == 0 || !turn) {
             name = playersInGame[1].getName();
             playersInGame[1].increaseWins();
         } else {
@@ -198,7 +182,7 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         board.boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
         board.boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
         message.append(playersInGame[bool2Int(turn)].getName() + " piece on " + board.positionToText(positionCurrentChecker.getKey(), positionCurrentChecker.getValue()) + " jumped on " + board.positionToText(jumpedCheckerRow, jumpedCheckerColumn) + " and moved to " + board.positionToText(c.position.getKey(), c.position.getValue()) + "\n");
-        countPieces();
+        board.countPieces();
     }
 
     private void moveChecker(Checker c) {
@@ -214,16 +198,6 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         board.boardSquares[c.position.getKey()][c.position.getValue()].setName(name);
         board.boardSquares[c.position.getKey()][c.position.getValue()].setActionCommand(action);
         board.boardSquares[c.position.getKey()][c.position.getValue()].setIcon(icon);
-    }
-
-    private void clear() {
-        for (int i = 0; i < board.boardSquares.length; i++) {
-            for (int j = 0; j < board.boardSquares.length; j++) {
-                if (board.isPositionValid(i, j)) {
-                    board.boardSquares[i][j].setBackground(board.darkBrown);
-                }
-            }
-        }
     }
 
     private void handleKingPromotion(Checker c) {
@@ -246,7 +220,7 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         this.canMove = false;
         if (c.getBackground().equals(Color.RED)) {
             jumpChecker(c);
-            clear();
+            board.clear();
             this.canJump = false;
 
             if (isCurrentPlayerPieceAndTurn(c) && canPerformAction(c, MoveType.JUMP)) {
@@ -263,12 +237,12 @@ public class Game extends JFrame implements MouseListener, ActionListener {
             }
         } else if (c.getBackground().equals(Color.YELLOW)) {
             moveChecker(c);
-            clear();
+            board.clear();
             handleKingPromotion(c);
             processPlayerTurn();
             Toolkit.getDefaultToolkit().beep();
         } else {
-            clear();
+            board.clear();
             showLegalMoves(m.getSource());
         }
         //changePlayerTurn();

@@ -12,6 +12,8 @@ public class Board extends JPanel {
     Color lightOrange = new Color(249, 192, 102);
     Color darkBrown = new Color(158, 76, 16);
     transient MouseListener listener;
+    int redCheckers;
+    int blackCheckers;
 
     public Board(MouseListener listener) {
         this.setLayout(new GridLayout(9, 9));
@@ -70,4 +72,29 @@ public class Board extends JPanel {
             }
         }
     }
+
+    public void clear() {
+        for (int i = 0; i < this.boardSquares.length; i++) {
+            for (int j = 0; j < this.boardSquares.length; j++) {
+                if (this.isPositionValid(i, j)) {
+                    this.boardSquares[i][j].setBackground(this.darkBrown);
+                }
+            }
+        }
+    }
+
+    public void countPieces() {
+        for (int i = 0; i < this.boardSquares.length; i++) {
+            for (int j = 0; j < this.boardSquares.length; j++) {
+                if (this.isPositionValid(i, j)) {
+                    if (this.boardSquares[i][j].isRed()) {
+                        redCheckers++;
+                    } else if (this.boardSquares[i][j].isBlack()) {
+                        blackCheckers++;
+                    }
+                }
+            }
+        }
+    }
+
 }
