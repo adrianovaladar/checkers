@@ -80,4 +80,13 @@ public class Checker extends JButton {
     public boolean isKing() {
         return PieceType.KING.name().equals(this.getActionCommand());
     }
+
+    public void setPosition(SimpleEntry<Integer, Integer> p) {
+        this.position = p;
+    }
+
+    public void setNone() {
+        this.setActionCommand(PieceType.NONE.name());
+        this.setName(PieceColour.NONE.name());
+    }
 }

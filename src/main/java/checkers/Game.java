@@ -121,7 +121,8 @@ public class Game extends JFrame implements MouseListener, ActionListener {
         this.add(southPanel, BorderLayout.SOUTH);
     }
 
-    public Game() {
+    public Game(boolean enableGraphics) {
+        if (!enableGraphics) return;
         this.startGUI();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
@@ -401,6 +402,6 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(Game::new);
+        SwingUtilities.invokeLater(() -> new Game(true));
     }
 }
