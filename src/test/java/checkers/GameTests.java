@@ -123,7 +123,7 @@ class GameTests {
         isCurrentPlayerPieceAndTurn.setAccessible(true);
         game.turn = false;
         boolean result = (boolean) isCurrentPlayerPieceAndTurn.invoke(game, 3, 2);
-        assertTrue(result, "Game turn is black and the piece is black");
+        assertTrue(result, "Game turn is red and the piece is red");
     }
 
     @Test
@@ -136,5 +136,29 @@ class GameTests {
         game.turn = false;
         boolean result = (boolean) isCurrentPlayerPieceAndTurn.invoke(game, 3, 2);
         assertFalse(result, "Game turn is black and the piece is black");
+    }
+
+    @Test
+    void isCurrentRedPlayerPieceAndTurnRed() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        setBoardSquaresNull();
+        game.board.boardSquares[3][2].redMan();
+        game.board.boardSquares[3][2].setPosition(new SimpleEntry<>(3, 2));
+        Method isCurrentRedPlayerPieceAndTurn = Game.class.getDeclaredMethod("isCurrentRedPlayerPieceAndTurn", Checker.class);
+        isCurrentRedPlayerPieceAndTurn.setAccessible(true);
+        game.turn = false;
+        boolean result = (boolean) isCurrentRedPlayerPieceAndTurn.invoke(game, game.board.boardSquares[3][2]);
+        assertTrue(result, "Game turn is red and the piece is red");
+    }
+
+    @Test
+    void isCurrentRedPlayerPieceAndTurnBlack() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        setBoardSquaresNull();
+        game.board.boardSquares[3][2].blackMan();
+        game.board.boardSquares[3][2].setPosition(new SimpleEntry<>(3, 2));
+        Method isCurrentRedPlayerPieceAndTurn = Game.class.getDeclaredMethod("isCurrentRedPlayerPieceAndTurn", Checker.class);
+        isCurrentRedPlayerPieceAndTurn.setAccessible(true);
+        game.turn = false;
+        boolean result = (boolean) isCurrentRedPlayerPieceAndTurn.invoke(game, game.board.boardSquares[3][2]);
+        assertFalse(result, "Game turn is red and the piece is red");
     }
 }
