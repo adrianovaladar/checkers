@@ -343,7 +343,8 @@ public class Game extends JFrame implements MouseListener, ActionListener {
     }
 
     private boolean isValidJump(Checker c, SimpleEntry<Integer, Integer> p) {
-        return (!turn && board.boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && board.boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed());
+        return ((!turn && board.boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isBlack()) || (turn && board.boardSquares[(c.position.getKey() + p.getKey()) / 2][(c.position.getValue() + p.getValue()) / 2].isRed()))
+                && board.boardSquares[p.getKey()][p.getValue()].isNone();
     }
 
     private boolean isCurrentPlayerPieceAndTurn(int row, int col) {

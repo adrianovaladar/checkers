@@ -62,7 +62,9 @@ public class Checker extends JButton {
     }
 
     public Checker() {
-
+        this.setActionCommand(PieceType.NONE.name());
+        this.setName(PieceColour.NONE.name());
+        this.setIcon(null);
     }
 
     public boolean isRed() {
@@ -79,6 +81,10 @@ public class Checker extends JButton {
 
     public boolean isKing() {
         return PieceType.KING.name().equals(this.getActionCommand());
+    }
+
+    public boolean isNone() {
+        return PieceColour.NONE.name().equals(this.getName());
     }
 
     public void setPosition(SimpleEntry<Integer, Integer> p) {
